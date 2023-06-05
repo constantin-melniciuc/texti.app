@@ -1,0 +1,2 @@
+# texti.app
+mobile app
