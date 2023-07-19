@@ -1,7 +1,6 @@
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import {
   GoogleSignin,
-  User,
   statusCodes,
 } from "@react-native-google-signin/google-signin";
 import { GOOGLE_CLIENT_ID } from "@env";
@@ -18,25 +17,35 @@ GoogleSignin.configure({
 // https://github.com/react-native-google-signin/google-signin/blob/master/docs/android-guide.md#google-login-does-not-work-when-using-internal-app-sharing
 class UserService {
   accessToken: string | null = null;
-  user: User | null = null;
+  user: FirebaseAuthTypes.User | null = null;
+  isSigningIn = false;
+  // fetchingTokens = false;
 
   constructor() {}
+
+  setUser(user: FirebaseAuthTypes.User | null) {
+    this.user = user;
+  }
+
+  async signIn() {
+    if (this.isSigningIn) return null;
+    await GoogleSignin.signInSilently();
+  }
 
   async isSignedIn(): Promise<boolean> {
     return await GoogleSignin.isSignedIn();
   }
 
   async signInWithGoogle(): Promise<FirebaseAuthTypes.UserCredential> {
+    this.isSigningIn = true;
     // Check if your device supports Google Play
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     // Get the users ID token
     try {
-      this.user = await GoogleSignin.signIn();
+      const user = await GoogleSignin.signIn();
 
       // Create a Google credential with the token
-      const googleCredential = auth.GoogleAuthProvider.credential(
-        this.user.idToken
-      );
+      const googleCredential = auth.GoogleAuthProvider.credential(user.idToken);
 
       // Sign-in the user with the credential
       const result = await auth().signInWithCredential(googleCredential);
@@ -53,6 +62,8 @@ class UserService {
       } else {
         // some other error happened
       }
+    } finally {
+      this.isSigningIn = false;
     }
   }
 
@@ -69,9 +80,11 @@ class UserService {
   }
 
   async getTokens() {
-    const { idToken } = await GoogleSignin.getTokens();
-
-    return idToken;
+    if (this.isSigningIn) return null;
+    this.isSigningIn = true;
+    const { accessToken } = await GoogleSignin.getTokens();
+    this.isSigningIn = false;
+    return accessToken;
   }
 }
 

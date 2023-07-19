@@ -1,18 +1,22 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import userService from "../src/services/UserService";
+import { StyleSheet, View } from "react-native";
+import { Text, Button } from "@rneui/themed";
+import { useAuth } from "../src/contexts/auth";
+import { Stack } from "expo-router";
+import { useSubscription } from "../src/contexts/subscription";
 
-export default function Page() {
-  const loginWithGoogle = () => {
-    console.log("Login with Google");
-    userService.signInWithGoogle();
-  };
+export default function HomePage() {
+  const { user } = useAuth();
+  const { refetchInfo } = useSubscription();
   return (
     <View style={styles.container}>
+      <Stack.Screen
+        options={{
+          title: "Home",
+        }}
+      />
       <View style={styles.main}>
-        <Text style={styles.title}>Login to start chatting</Text>
-        <TouchableOpacity onPress={loginWithGoogle}>
-          <Text style={styles.subtitle}>Login with Google</Text>
-        </TouchableOpacity>
+        <Text h1>Welcome Back {user?.displayName}</Text>
+        <Button title="Refetch info" onPress={refetchInfo} />
       </View>
     </View>
   );
@@ -29,13 +33,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     maxWidth: 960,
     marginHorizontal: "auto",
-  },
-  title: {
-    fontSize: 64,
-    fontWeight: "bold",
-  },
-  subtitle: {
-    fontSize: 36,
-    color: "#38434D",
   },
 });

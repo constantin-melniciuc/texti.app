@@ -16,7 +16,7 @@ import com.facebook.flipper.plugins.fresco.FrescoFlipperPlugin;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
-import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
+// import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
 import com.facebook.react.ReactInstanceEventListener;
 import com.facebook.react.ReactInstanceManager;
@@ -38,15 +38,18 @@ public class ReactNativeFlipper {
       client.addPlugin(new SharedPreferencesFlipperPlugin(context));
       client.addPlugin(CrashReporterPlugin.getInstance());
 
-      NetworkFlipperPlugin networkFlipperPlugin = new NetworkFlipperPlugin();
-      NetworkingModule.setCustomClientBuilder(
-          new NetworkingModule.CustomClientBuilder() {
-            @Override
-            public void apply(OkHttpClient.Builder builder) {
-              builder.addNetworkInterceptor(new FlipperOkhttpInterceptor(networkFlipperPlugin));
-            }
-          });
-      client.addPlugin(networkFlipperPlugin);
+      // This is stopping SSE to work
+      // details: https://stackoverflow.com/questions/69235694/react-native-cant-connect-to-sse-in-android
+      // root cause here: https://github.com/facebook/react-native/issues/28835#issuecomment-861827332
+      // NetworkFlipperPlugin networkFlipperPlugin = new NetworkFlipperPlugin();
+      // NetworkingModule.setCustomClientBuilder(
+      //     new NetworkingModule.CustomClientBuilder() {
+      //       @Override
+      //       public void apply(OkHttpClient.Builder builder) {
+      //         builder.addNetworkInterceptor(new FlipperOkhttpInterceptor(networkFlipperPlugin));
+      //       }
+      //     });
+      // client.addPlugin(networkFlipperPlugin);
       client.start();
 
       // Fresco Plugin needs to ensure that ImagePipelineFactory is initialized
