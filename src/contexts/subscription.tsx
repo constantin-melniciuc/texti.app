@@ -34,7 +34,7 @@ export function SubscriptionProvider(props) {
     <SubscriptionContext.Provider
       value={{
         plan: productService.currentConfig,
-        subscription: productService.subscription,
+        subscription,
         refetchInfo: async () => {
           await productService.init();
         },

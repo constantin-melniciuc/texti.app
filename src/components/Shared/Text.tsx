@@ -2,7 +2,7 @@ import { Text as RNText, TextProps as RNTextProps } from "@rneui/themed";
 import { colors } from "../../theme";
 
 interface TextProps extends RNTextProps {
-  color?: "black" | "white" | "gray";
+  color?: "black" | "white" | "gray" | "red";
   weight?: "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800";
 }
 
@@ -12,6 +12,8 @@ const computeColor = (color: TextProps["color"]) => {
       return colors.white;
     case "gray":
       return colors.grayText;
+    case "red":
+      return colors.errorRed;
     default:
       return colors.contentBlack;
   }

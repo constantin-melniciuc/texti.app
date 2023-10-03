@@ -7,7 +7,9 @@ export default function PageTitle({ title }: { title?: string }) {
   return (
     <TouchableOpacity>
       <Link href="/">
-        <Text h4>{title || APP_NAME}</Text>
+        <Text h4 h4Style={{ textTransform: "capitalize" }}>
+          {title || APP_NAME}
+        </Text>
       </Link>
     </TouchableOpacity>
   );

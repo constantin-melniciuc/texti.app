@@ -29,6 +29,16 @@ export interface IChatListItem {
   modified?: number;
 }
 
+export interface Prompt {
+  title: string;
+  prompt: string;
+  message: string;
+}
+
+export interface Category {
+  [key: string]: Prompt[];
+}
+
 export class ChatService {
   conversations: IChatListItem[] = [];
   _activeChat: IChatListItem | null = null;
@@ -36,12 +46,13 @@ export class ChatService {
   activeThreadId: string | null = null;
   // TODO: add a loading state to the UI
   isLoading: boolean = false;
-  // TODO: add can continue to the UI
   stopReason: "ended" | "length" = "ended";
   timeout: ReturnType<typeof setTimeout> | null = null;
+  categories: Category = {};
 
   constructor() {
     makeObservable(this, {
+      categories: observable,
       conversations: observable,
       activeThreadId: observable,
       setStreamingMessage: action,
@@ -55,12 +66,26 @@ export class ChatService {
       fetchConversations: flow,
       createConversation: flow,
       eventSource: flow,
+      fetchCategories: flow,
     });
   }
 
   init() {
     this.fetchConversations();
+    this.fetchCategories();
   }
+
+  fetchCategories = flow(function* (this: ChatService) {
+    const response = yield fetch(`${API_URL}/chat/templates`, {
+      method: "GET",
+    });
+
+    const json = yield response.json();
+
+    runInAction(() => {
+      this.categories = json;
+    });
+  });
 
   fetchConversations = flow(function* (this: ChatService, retry = true) {
     try {
@@ -90,7 +115,11 @@ export class ChatService {
     }
   });
 
-  createConversation = flow(function* (this: ChatService, retry = true) {
+  createConversation = flow(function* (
+    this: ChatService,
+    { topic = "", message = "" }: { topic?: string; message?: string }
+  ) {
+    console.log(">> createConversation", { topic, message });
     try {
       const token = yield userService.getTokens();
       const headers = buildHeaders({
@@ -98,20 +127,40 @@ export class ChatService {
         email: userService.user.email,
         uid: userService.user.providerData[0].uid,
       });
-
-      const response = yield fetch(`${API_URL}/chat/new`, {
+      const reqParams = {
         method: "POST",
         headers,
-      });
+        body: JSON.stringify({ topic, message }),
+      };
+
+      const response = yield fetch(`${API_URL}/chat/new`, reqParams);
       const json = yield response.json();
+
       if (json.statusCode === 403) {
         throw new Error("Unauthorized");
       }
-      yield this.fetchConversations(false);
+      // yield this.fetchConversations(false);
       this.setActiveThreadId(json.data.threadId);
+
+      if (topic) {
+        this.appendMessageToThread({
+          content: topic,
+          createdAt: new Date().toISOString(),
+          role: "user",
+        });
+      }
+
+      if (message) {
+        this.appendMessageToThread({
+          content: message,
+          createdAt: new Date().toISOString(),
+          role: "user",
+        });
+      }
 
       return json.data.threadId;
     } catch (error) {
+      console.warn(error.message, error.name);
       console.log(error);
     }
   });

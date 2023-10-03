@@ -11,9 +11,7 @@ export default function Page() {
   const router = useRouter();
 
   const onCreateNew = () => {
-    // const threadId = await createConversation();
-    // navigation.navigate(`/chats/${threadId}`);
-    router.push("/chats/1234");
+    router.push("/chats/new");
   };
 
   if (threadid === "new") {

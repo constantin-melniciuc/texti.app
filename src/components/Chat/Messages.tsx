@@ -1,38 +1,11 @@
-import React from "react";
-import chatService, { IMessage, ChatService } from "../../services/ChatService";
-import Text from "../Shared/Text";
+import React, { useEffect, useRef } from "react";
+import chatService, { ChatService } from "../../services/ChatService";
 import { colors, theme } from "../../theme";
 import styled from "styled-components/native";
-// import { useChat } from "../../contexts/chat";
 import { observer } from "mobx-react";
 import { IconButton } from "../Shared/IconButton";
-
-const MessagesContainer = styled.ScrollView`
-  flex: 1;
-  padding: ${theme.spacing.md}px;
-  width: 100%;
-`;
-
-const Message = styled.View<{ role: IMessage["role"] }>`
-  background-color: ${({ role }) =>
-    role === "user" ? colors.grayMessage : colors.messageBlue};
-  align-self: ${({ role }) => (role === "user" ? "flex-end" : "flex-start")};
-  padding: ${theme.spacing.md}px;
-  border-top-left-radius: ${theme.spacing.sm}px;
-  border-top-right-radius: ${theme.spacing.sm}px;
-  border-bottom-left-radius: ${({ role }) =>
-    role === "user" ? theme.spacing.sm : 0}px;
-  border-bottom-right-radius: ${({ role }) =>
-    role === "user" ? 0 : theme.spacing.sm}px;
-  margin-bottom: ${theme.spacing.md}px;
-  margin-right: ${({ role }) => (role === "user" ? 0 : theme.spacing.xl)}px;
-  margin-left: ${({ role }) => (role === "user" ? theme.spacing.xl : 0)}px;
-`;
-
-const MessageText = styled(Text)`
-  word-break: break-word;
-  white-space: break-spaces;
-`;
+import { Keyboard, ScrollView } from "react-native";
+import { Message, MessageText, MessagesContainer } from "./StyledComponents";
 
 const ButtonsContainer = styled.View`
   flex-flow: row-nowrap;
@@ -49,10 +22,31 @@ const StyledIconButton = styled(IconButton)`
 `;
 
 const MessagesView = observer(({ service }: { service: ChatService }) => {
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      scrollViewRef?.current.scrollToEnd({ animated: true });
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      scrollViewRef?.current.scrollToEnd({ animated: true });
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
   const { streamingMessage, activeChat, stopReason } = service;
+  const scrollViewRef = useRef<ScrollView | null>(null);
 
   return (
     <MessagesContainer
+      ref={scrollViewRef}
+      automaticallyAdjustKeyboardInsets
+      onContentSizeChange={() => {
+        if (!scrollViewRef?.current) return;
+        scrollViewRef.current.scrollToEnd({ animated: true });
+      }}
       contentContainerStyle={{
         justifyContent: "flex-end",
         alignItems: "flex-end",

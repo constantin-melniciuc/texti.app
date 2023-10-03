@@ -1,5 +1,4 @@
 import { FlatList, RefreshControl, TouchableOpacity, View } from "react-native";
-// import { useChat } from "../../src/contexts/chat";
 import { ListItem } from "@rneui/themed";
 import { theme } from "../../src/theme";
 import RobotAvatar from "../../src/components/Chat/RobotAvatar";
@@ -12,7 +11,6 @@ import chatService, {
 import { observer } from "mobx-react";
 
 const ChatPage = observer(({ service }: { service: ChatService }) => {
-  // const { chats, refetchChats } = useChat();
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const router = useRouter();
 
@@ -27,8 +25,6 @@ const ChatPage = observer(({ service }: { service: ChatService }) => {
 
     router.push(`/chats/${threadId}`);
   };
-
-  console.log("convs", service.conversations);
 
   const _renderItem = ({
     item,

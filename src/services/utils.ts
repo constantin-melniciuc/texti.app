@@ -11,6 +11,8 @@ export const buildHeaders = ({
     Authorization: token,
     "x-user-id": uid,
     "x-user-email": email,
+    Accept: "application/json",
+    "Content-Type": "application/json",
   };
 };
 

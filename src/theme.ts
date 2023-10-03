@@ -44,12 +44,31 @@ const theme = createTheme({
         borderBottomWidth: 1,
       },
     },
-    Button: {
-      buttonStyle: {
-        borderRadius: 8,
-        paddingVertical: 16,
-        paddingHorizontal: 24,
-      },
+    Button: (props, theme) => {
+      let buttonStyle = {
+        borderRadius: theme.spacing.sm,
+        paddingVertical: theme.spacing.lg,
+        paddingHorizontal: theme.spacing.lg,
+      };
+
+      if (props.size === "sm") {
+        buttonStyle = {
+          borderRadius: theme.spacing.sm,
+          paddingVertical: theme.spacing.sm,
+          paddingHorizontal: theme.spacing.sm,
+        };
+      }
+      if (props.size === "lg") {
+        buttonStyle = {
+          borderRadius: theme.spacing.sm,
+          paddingVertical: theme.spacing.xl,
+          paddingHorizontal: theme.spacing.xl,
+        };
+      }
+
+      return {
+        buttonStyle,
+      };
     },
     Text: {
       h1Style: {

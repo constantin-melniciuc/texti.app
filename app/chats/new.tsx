@@ -1,20 +1,32 @@
 import { useRouter } from "expo-router";
-import chatService from "../../src/services/ChatService";
-import { useEffect } from "react";
+import chatService, { ChatService } from "../../src/services/ChatService";
+import NewChatForm from "../../src/components/Chat/NewChatForm";
+import { useState } from "react";
 
-export default function Page() {
+function New({ service }: { service: ChatService }) {
   const router = useRouter();
+  const [hasError, setHasError] = useState<boolean>(false);
 
-  const onCreateNew = async () => {
-    const threadId = await chatService.createConversation();
+  const onCreateNew = async ({ topic, message }) => {
+    console.log(">> cb topic", topic);
+    const threadId = await service.createConversation({ topic, message });
     console.log(">> new conversation page threadID", threadId);
+    if (!threadId) {
+      setHasError(true);
+      return;
+    }
     router.push(`/chats/${threadId}`);
-    // router.push("/chats/1234");
   };
 
-  useEffect(() => {
-    onCreateNew();
-  }, []);
+  return (
+    <NewChatForm
+      hasError={hasError}
+      onSubmit={onCreateNew}
+      categories={service.categories}
+    />
+  );
+}
 
-  return null;
+export default function Page() {
+  return <New service={chatService} />;
 }
