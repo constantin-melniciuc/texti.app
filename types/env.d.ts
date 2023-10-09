@@ -8,4 +8,8 @@ declare module "@env" {
   export const PROJECT_ID: string;
   export const STORAGE_BUCKET: string;
   export const API_KEY: string;
+  export const APP_NAME: string;
+  export const ENV: string;
+  export const API_URL: string;
+  export const AUTH_JWT_SIGNATURE: string;
 }
