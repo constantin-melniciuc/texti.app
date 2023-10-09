@@ -1,8 +1,8 @@
 module.exports = {
   expo: {
-    scheme: "texti.app",
-    name: "texti.app",
-    slug: "texti.app",
+    scheme: "Texti",
+    name: "Texti",
+    slug: "Texti",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon.png",

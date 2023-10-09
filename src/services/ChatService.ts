@@ -49,24 +49,28 @@ export class ChatService {
   stopReason: "ended" | "length" = "ended";
   timeout: ReturnType<typeof setTimeout> | null = null;
   categories: Category = {};
+  fetchingChats: boolean = false;
 
   constructor() {
     makeObservable(this, {
+      // observables
+      _activeChat: observable,
+      activeChat: computed,
+      activeThreadId: observable,
       categories: observable,
       conversations: observable,
-      activeThreadId: observable,
-      setStreamingMessage: action,
-      streamingMessage: observable,
-      _activeChat: observable,
       stopReason: observable,
-      activeChat: computed,
+      streamingMessage: observable,
+      // actions
+      init: action,
       setActiveChat: action,
       setActiveThreadId: action,
-      init: action,
-      fetchConversations: flow,
+      setStreamingMessage: action,
+      // generators
       createConversation: flow,
       eventSource: flow,
       fetchCategories: flow,
+      fetchConversations: flow,
     });
   }
 
@@ -88,15 +92,15 @@ export class ChatService {
   });
 
   fetchConversations = flow(function* (this: ChatService, retry = true) {
+    if (this.fetchingChats) return;
     try {
+      this.fetchingChats = true;
       const token = yield userService.getTokens();
       const headers = buildHeaders({
         token,
         email: userService.user.email,
         uid: userService.user.providerData[0].uid,
       });
-
-      console.log(`>[chatservice][API]: ${API_URL}/chat/all`);
 
       const response = yield fetch(`${API_URL}/chat/all`, {
         method: "GET",
@@ -111,7 +115,9 @@ export class ChatService {
       });
       return json.data;
     } catch (error) {
-      console.log("[chatservice]", error);
+      console.error("[ChatService].Err", error);
+    } finally {
+      this.fetchingChats = false;
     }
   });
 
@@ -119,7 +125,6 @@ export class ChatService {
     this: ChatService,
     { topic = "", message = "" }: { topic?: string; message?: string }
   ) {
-    console.log(">> createConversation", { topic, message });
     try {
       const token = yield userService.getTokens();
       const headers = buildHeaders({
@@ -161,7 +166,7 @@ export class ChatService {
       return json.data.threadId;
     } catch (error) {
       console.warn(error.message, error.name);
-      console.log(error);
+      console.error("[ChatService].Err", error);
     }
   });
 
@@ -188,7 +193,7 @@ export class ChatService {
 
   // @TODO: base on the error message show an alert / upsell / new chat etc.
   _onError(error) {
-    console.log(">> onError", error);
+    console.error("[ChatService].Err", error);
     if (error && error.topic) {
       if (error.topic === "monthly_limit_reached") {
         // this._showMonthlyLimitReached();
@@ -255,7 +260,6 @@ export class ChatService {
     const messageListener: EventSourceListener<"message"> = function (
       e: CustomEvent<"message">
     ) {
-      console.log(">> event", e.type);
       // message received no need to keep the loader going
       clearTimeout(service.timeout);
       service.timeout = setTimeout(resetState, 10000);
@@ -265,37 +269,33 @@ export class ChatService {
       }
 
       // Assuming we receive JSON-encoded data payloads:
-      const fragments = e.data.split("data: ").filter((piece) => piece);
+      const fragments = e.data;
 
-      fragments.forEach((fragment) => {
-        if (isJson(fragment)) {
-          const payload = JSON.parse(fragment);
-          const messageChunk = payload.choices[0].delta.content;
-          if (messageChunk) {
-            service.setStreamingMessage(
-              service.streamingMessage + messageChunk
-            );
-          }
-
-          const finishReason = payload.choices[0].finish_reason;
-          if (finishReason === "length") {
-            // we can continue button and do something
-            runInAction(() => {
-              service.stopReason = "length";
-            });
-          } else {
-            runInAction(() => {
-              service.stopReason = "ended";
-            });
-          }
+      if (isJson(fragments)) {
+        const payload = JSON.parse(fragments);
+        const messageChunk = payload.choices[0].delta.content;
+        if (messageChunk) {
+          service.setStreamingMessage(service.streamingMessage + messageChunk);
         }
-      });
 
-      if (fragments && fragments.some((chunk) => chunk.includes("[DONE]"))) {
+        const finishReason = payload.choices[0].finish_reason;
+        if (finishReason === "length") {
+          // we can continue button and do something
+          runInAction(() => {
+            service.stopReason = "length";
+          });
+        } else {
+          runInAction(() => {
+            service.stopReason = "ended";
+          });
+        }
+      }
+
+      if (fragments.includes("[DONE]")) {
         service.appendMessageToThread({
           content: service.streamingMessage,
           createdAt: new Date().toISOString(),
-          role: "assistant",
+          role: "system",
         });
         runInAction(() => {
           service.stopReason = "ended";

@@ -1,7 +1,7 @@
 import { FlatList, RefreshControl, TouchableOpacity, View } from "react-native";
 import { ListItem } from "@rneui/themed";
 import { theme } from "../../src/theme";
-import RobotAvatar from "../../src/components/Chat/RobotAvatar";
+import RobotAvatar from "../../src/components/Shared/RobotAvatar";
 import { useCallback, useState } from "react";
 import { useRouter } from "expo-router";
 import chatService, {

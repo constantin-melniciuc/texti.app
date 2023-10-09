@@ -1,15 +1,63 @@
 import { Stack } from "expo-router";
 import { StyleSheet, View } from "react-native";
-import { Badge, Button } from "@rneui/themed";
-import { useSubscription } from "../src/contexts/subscription";
+import { Button, Divider, Icon, Overlay } from "@rneui/themed";
 import { useAuth } from "../src/contexts/auth";
 import { colors, theme } from "../src/theme";
 import Text from "../src/components/Shared/Text";
-import { convertCentsToFixed } from "../src/services/utils";
+import subscriptionService from "../src/services/SubscriptionService";
+import { WebView } from "react-native-webview";
+import { useEffect, useState } from "react";
+import userService from "../src/services/UserService";
+import styled from "styled-components/native";
+
+const StyledCloseButton = styled(Icon)`
+  // position: absolute;
+  top: ${theme.spacing.md}px;
+  right: ${theme.spacing.md}px;
+  padding: ${theme.spacing.md}px;
+  background-color: ${colors.accentBlue};
+  z-index: 1;
+`;
+
+const Feature = ({ isActive }: { isActive: boolean }) => {
+  return isActive ? (
+    <View style={styles.inline}>
+      <Text>Yes</Text>
+      <Icon
+        type="antdesign"
+        name="checkcircleo"
+        color={colors.hoverGreen}
+        size={16}
+      />
+    </View>
+  ) : (
+    <View style={styles.inline}>
+      <Text>No</Text>
+      <Icon
+        size={16}
+        type="antdesign"
+        name="minuscircleo"
+        color={colors.textRed}
+      />
+    </View>
+  );
+};
 
 export default function Profile() {
-  const { user } = useAuth();
-  const { subscription, plan } = useSubscription();
+  const [visible, setVisible] = useState(false);
+  const [source, setSource] = useState("");
+  const { user, backendUser } = useAuth();
+  const { currentSubscription } = subscriptionService;
+
+  useEffect(() => {
+    const getCheckoutUrl = async () => {
+      const checkoutUrl = await userService.createWebUrl();
+      if (checkoutUrl) {
+        setSource(checkoutUrl);
+      }
+    };
+    getCheckoutUrl();
+  }, [visible]);
 
   return (
     <View
@@ -22,58 +70,97 @@ export default function Profile() {
     >
       <Stack.Screen
         options={{
-          title: "Profile",
+          title: "Dashboard",
         }}
       />
 
-      <Text h4>Hi {user?.displayName}!</Text>
+      <Text h3>👋 {user?.displayName}</Text>
+      <View
+        style={{ paddingLeft: theme.spacing.md, marginTop: theme.spacing.md }}
+      >
+        <Text style={{}}>Welcome to your profile page.</Text>
+        <Text style={{}}>Here you can manage your account.</Text>
+      </View>
 
       <View style={styles.container}>
         <View style={styles.row}>
-          <Text weight="700" h4>
-            Subscription Details
+          <Text weight="700" h3>
+            Your bio
           </Text>
         </View>
         <View style={styles.row}>
-          <Text weight="700" color="gray">
-            Plan
+          <Text weight="700">E-mail:</Text>
+          <Text>{user?.email}</Text>
+        </View>
+        <Divider style={{ marginBottom: theme.spacing.lg }} />
+        <View style={styles.row}>
+          <Text weight="700" h3>
+            Your subscription
           </Text>
-          <Badge value={subscription?.name} status="primary" />
         </View>
         <View style={styles.row}>
-          <Text weight="700" color="gray">
-            Subscription recurrence
+          <Text weight="700">Tier:</Text>
+          <Text>
+            {backendUser?.subscription.name.charAt(0).toUpperCase() +
+              backendUser?.subscription.name.slice(1)}
           </Text>
-          <Text style={{ textTransform: "capitalize" }}>
-            {subscription?.subscriptionType.charAt(0).toUpperCase() +
-              subscription?.subscriptionType.slice(1)}
-          </Text>
-          <View style={styles.row}>
-            <Text weight="700" color="gray">
-              Plan Features
-            </Text>
-            <View style={{ ...styles.row, flexDirection: "row", margin: 0 }}>
+        </View>
+        <View style={styles.row}>
+          <Text weight="700">Paid Subscription?</Text>
+          <Feature isActive={backendUser?.subscription.status === "paid"} />
+        </View>
+        {currentSubscription ? (
+          <>
+            <View style={styles.row}>
+              <Text weight="700">Max Monthly Questions:</Text>
               <Text>
-                {plan.metadata.internal_name === "free"
-                  ? "Free"
-                  : `${convertCentsToFixed(plan.price.unit_amount_decimal)}/mo`}
+                {backendUser?.monthlyPhraseCount}/
+                {currentSubscription.metadata.request_count}
               </Text>
-              <Text weight="700" color="gray">
-                ●
-              </Text>
-              <Text>{plan.metadata.chat_count} Chats</Text>
-              <Text weight="700" color="gray">
-                ●
-              </Text>
-              <Text>{plan.metadata.request_count} Requests</Text>
             </View>
-          </View>
-        </View>
+            <View style={styles.row}>
+              <Text weight="700">Max Monthly Chats:</Text>
+              <Text>
+                {backendUser?.monthlyChatCount}/
+                {currentSubscription.metadata.chat_count}
+              </Text>
+            </View>
+            <View style={styles.row}>
+              <Text weight="700">Are your Questions Private?</Text>
+              <Feature
+                isActive={currentSubscription.metadata.private_requests === "1"}
+              />
+            </View>
+            <View style={styles.row}>
+              <Text weight="700">Can you search the web?</Text>
+              <Feature
+                isActive={currentSubscription.metadata.web_browsing === "1"}
+              />
+            </View>
+          </>
+        ) : null}
         <View>
           {/* TODO: On click open webview where the user is authed into backend and he can upgrade his package token should be passed as an argument probably */}
-          <Button title="Upgrade Plan" />
+          <Button
+            title="Upgrade Plan"
+            loading={!source}
+            onPress={() => setVisible(true)}
+          />
         </View>
       </View>
+      <Overlay
+        isVisible={visible}
+        style={{ flex: 1, width: "100%", position: "relative" }}
+        onDismiss={() => setVisible(false)}
+        fullScreen
+        onRequestClose={() => setVisible(false)}
+        supportedOrientations={["portrait", "portrait-upside-down"]}
+      >
+        {source ? (
+          <WebView source={{ uri: source }} style={{ flex: 1 }} />
+        ) : null}
+        <StyledCloseButton name="close" onPress={() => setVisible(false)} />
+      </Overlay>
     </View>
   );
 }
@@ -89,11 +176,16 @@ const styles = StyleSheet.create({
     alignItems: "stretch",
   },
   row: {
-    marginVertical: theme.spacing.sm,
-    flexDirection: "column",
+    marginVertical: theme.spacing.xs,
+    flexDirection: "row",
     alignItems: "flex-start",
     gap: theme.spacing.sm,
     marginBottom: theme.spacing.lg,
-    flexWrap: "wrap",
+    flexWrap: "nowrap",
+  },
+  inline: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing.sm,
   },
 });

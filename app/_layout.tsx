@@ -4,7 +4,6 @@ import { AuthProvider } from "../src/contexts/auth";
 import Header from "../src/components/Shared/Header";
 import { ThemeProvider } from "@rneui/themed";
 import { theme } from "../src/theme";
-import { SubscriptionProvider } from "../src/contexts/subscription";
 import { ChatProvider } from "../src/contexts/chat";
 import { Icon } from "@rneui/themed";
 
@@ -19,60 +18,58 @@ export default function Layout() {
   };
   return (
     <AuthProvider>
-      <SubscriptionProvider>
-        <ChatProvider>
-          <ThemeProvider theme={theme}>
-            <SafeAreaProvider>
-              <Tabs>
-                <Tabs.Screen
-                  name="index"
-                  options={{
-                    ...commonHeaderOptions,
-                    title: "Home",
-                    tabBarIcon: (props) =>
-                      tabBarIcon({ ...props, iconName: "home" }),
-                  }}
-                />
-                <Tabs.Screen
-                  name="chats/[threadid]"
-                  options={{
-                    ...commonHeaderOptions,
-                    href: null,
-                  }}
-                />
-                <Tabs.Screen
-                  name="chats/new"
-                  options={{
-                    ...commonHeaderOptions,
-                    href: "/chats/new",
-                    title: "New Chat",
-                    tabBarIcon: (props) =>
-                      tabBarIcon({ ...props, iconName: "add-circle" }),
-                  }}
-                />
-                <Tabs.Screen
-                  name="chats/index"
-                  options={{
-                    ...commonHeaderOptions,
-                    title: "Chats",
-                    tabBarIcon: (props) =>
-                      tabBarIcon({ ...props, iconName: "forum" }),
-                  }}
-                />
+      <ChatProvider>
+        <ThemeProvider theme={theme}>
+          <SafeAreaProvider>
+            <Tabs>
+              <Tabs.Screen
+                name="index"
+                options={{
+                  ...commonHeaderOptions,
+                  title: "Home",
+                  tabBarIcon: (props) =>
+                    tabBarIcon({ ...props, iconName: "home" }),
+                }}
+              />
+              <Tabs.Screen
+                name="chats/[threadid]"
+                options={{
+                  ...commonHeaderOptions,
+                  href: null,
+                }}
+              />
+              <Tabs.Screen
+                name="chats/new"
+                options={{
+                  ...commonHeaderOptions,
+                  href: "/chats/new",
+                  title: "New Chat",
+                  tabBarIcon: (props) =>
+                    tabBarIcon({ ...props, iconName: "add-circle" }),
+                }}
+              />
+              <Tabs.Screen
+                name="chats/index"
+                options={{
+                  ...commonHeaderOptions,
+                  title: "Chats",
+                  tabBarIcon: (props) =>
+                    tabBarIcon({ ...props, iconName: "forum" }),
+                }}
+              />
 
-                <Tabs.Screen
-                  name="profile"
-                  options={{
-                    ...commonHeaderOptions,
-                    href: null,
-                  }}
-                />
-                <Tabs.Screen name="(auth)/sign-in" options={{ href: null }} />
-              </Tabs>
-            </SafeAreaProvider>
-          </ThemeProvider>
-        </ChatProvider>
-      </SubscriptionProvider>
+              <Tabs.Screen
+                name="profile"
+                options={{
+                  ...commonHeaderOptions,
+                  href: null,
+                }}
+              />
+              <Tabs.Screen name="(auth)/sign-in" options={{ href: null }} />
+            </Tabs>
+          </SafeAreaProvider>
+        </ThemeProvider>
+      </ChatProvider>
     </AuthProvider>
   );
 }

@@ -8,9 +8,7 @@ function New({ service }: { service: ChatService }) {
   const [hasError, setHasError] = useState<boolean>(false);
 
   const onCreateNew = async ({ topic, message }) => {
-    console.log(">> cb topic", topic);
     const threadId = await service.createConversation({ topic, message });
-    console.log(">> new conversation page threadID", threadId);
     if (!threadId) {
       setHasError(true);
       return;

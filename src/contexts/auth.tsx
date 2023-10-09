@@ -1,12 +1,13 @@
 import { useRouter, useSegments } from "expo-router";
 import { useEffect, useContext, createContext, useState } from "react";
-import userService from "../services/UserService";
+import userService, { BackendUser } from "../services/UserService";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
 type AuthContextType = {
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   user: FirebaseAuthTypes.User | null;
+  backendUser: BackendUser | null;
 };
 
 const AuthContext = createContext<AuthContextType>(null);
@@ -45,6 +46,10 @@ export function AuthProvider(props) {
     await userService.signInWithGoogle();
   };
 
+  const signOut = async () => {
+    await userService.signOut();
+  };
+
   function onAuthStateChanged(user: FirebaseAuthTypes.User) {
     setUser(user);
     userService.setUser(user);
@@ -60,8 +65,9 @@ export function AuthProvider(props) {
     <AuthContext.Provider
       value={{
         signInWithGoogle: loginWithGoogle,
-        signOut: userService.signOut,
+        signOut,
         user,
+        backendUser: userService.backendUser,
       }}
     >
       {props.children}

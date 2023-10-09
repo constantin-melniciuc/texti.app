@@ -2,11 +2,9 @@ import { StyleSheet, View } from "react-native";
 import { Text, Button } from "@rneui/themed";
 import { useAuth } from "../src/contexts/auth";
 import { Stack } from "expo-router";
-import { useSubscription } from "../src/contexts/subscription";
 
 export default function HomePage() {
   const { user } = useAuth();
-  const { refetchInfo } = useSubscription();
   return (
     <View style={styles.container}>
       <Stack.Screen
@@ -16,7 +14,6 @@ export default function HomePage() {
       />
       <View style={styles.main}>
         <Text h1>Welcome Back {user?.displayName}</Text>
-        <Button title="Refetch info" onPress={refetchInfo} />
       </View>
     </View>
   );

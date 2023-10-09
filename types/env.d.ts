@@ -11,4 +11,5 @@ declare module "@env" {
   export const APP_NAME: string;
   export const ENV: string;
   export const API_URL: string;
+  export const AUTH_JWT_SIGNATURE: string;
 }

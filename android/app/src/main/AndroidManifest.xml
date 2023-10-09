@@ -20,7 +20,7 @@
       android:value="ALWAYS" />
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0" />
     <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL"
-      android:value="https://exp.host/@anonymous/texti.app" />
+      android:value="https://exp.host/@anonymous/Texti" />
     <activity android:name=".MainActivity" android:label="@string/app_name"
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
       android:launchMode="singleTask" android:windowSoftInputMode="adjustResize"
@@ -34,9 +34,9 @@
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="texti.app" />
+        <data android:scheme="Texti" />
         <data android:scheme="com.muzedigital.texti" />
-        <data android:scheme="exp+texti.app" />
+        <data android:scheme="exp+Texti" />
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"
