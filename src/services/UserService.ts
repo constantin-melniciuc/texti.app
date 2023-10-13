@@ -77,6 +77,7 @@ class UserService {
 
   setUser(user: FirebaseAuthTypes.User | null) {
     this.user = user;
+    this.refreshTokens();
   }
 
   setBackendUser(backendUser: BackendUser | null) {
@@ -148,6 +149,14 @@ class UserService {
       this.isSigningIn = false;
     });
     return accessToken;
+  });
+
+  refreshTokens = flow(function* (this: UserService) {
+    const { accessToken } = yield GoogleSignin.getTokens();
+    runInAction(() => {
+      this.accessToken = accessToken;
+      this.isSigningIn = false;
+    });
   });
 
   getMe = flow(function* (this: UserService) {

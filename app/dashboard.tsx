@@ -1,5 +1,5 @@
 import { Stack } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Divider, Icon, Overlay } from "@rneui/themed";
 import { useAuth } from "../src/contexts/auth";
 import { colors, theme } from "../src/theme";
@@ -43,7 +43,7 @@ const Feature = ({ isActive }: { isActive: boolean }) => {
   );
 };
 
-export default function Profile() {
+export default function Dashboard() {
   const [visible, setVisible] = useState(false);
   const [source, setSource] = useState("");
   const { user, backendUser } = useAuth();
@@ -60,9 +60,11 @@ export default function Profile() {
   }, [visible]);
 
   return (
-    <View
+    <ScrollView
       style={{
         flex: 1,
+      }}
+      contentContainerStyle={{
         justifyContent: "flex-start",
         alignItems: "stretch",
         padding: 24,
@@ -78,7 +80,7 @@ export default function Profile() {
       <View
         style={{ paddingLeft: theme.spacing.md, marginTop: theme.spacing.md }}
       >
-        <Text style={{}}>Welcome to your profile page.</Text>
+        <Text style={{}}>Welcome to your Dashboard</Text>
         <Text style={{}}>Here you can manage your account.</Text>
       </View>
 
@@ -140,7 +142,6 @@ export default function Profile() {
           </>
         ) : null}
         <View>
-          {/* TODO: On click open webview where the user is authed into backend and he can upgrade his package token should be passed as an argument probably */}
           <Button
             title="Upgrade Plan"
             loading={!source}
@@ -161,7 +162,18 @@ export default function Profile() {
         ) : null}
         <StyledCloseButton name="close" onPress={() => setVisible(false)} />
       </Overlay>
-    </View>
+      <View style={styles.container}>
+        <Text weight="700" h3>
+          Already saying bye? 😢
+        </Text>
+        <Button
+          containerStyle={{ marginTop: theme.spacing.xl }}
+          color={theme.darkColors.error}
+          title="Logout"
+          onPress={() => userService.signOut()}
+        />
+      </View>
+    </ScrollView>
   );
 }
 

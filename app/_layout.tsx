@@ -59,7 +59,7 @@ export default function Layout() {
               />
 
               <Tabs.Screen
-                name="profile"
+                name="dashboard"
                 options={{
                   ...commonHeaderOptions,
                   href: null,
