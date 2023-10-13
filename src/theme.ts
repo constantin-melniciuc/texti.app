@@ -1,17 +1,27 @@
 import { createTheme } from "@rneui/themed";
 
+const Z_MAX = 999999999;
+
+const zLayer = {
+  toasts: Z_MAX,
+  modal: Z_MAX - 1,
+};
+
 const colors = {
   grayMessage: "#f4f4f4",
   grayBorder: "#ebedef",
   grayPlaceholder: "#a4a4a4",
   grayText: "#a1a0a0",
   errorRed: "#e23636",
+  backgroundRed: "#eb7870",
   textRed: "#eb7870",
   hoverGreen: "#34c56e",
+  backgroundGreen: "#80dbc4",
   contentBlack: "#1d2734",
   accentBlue: "#1c76fd",
   messageBlue: "#EAF2FF",
   white: "#ffffff",
+  transparent: "rgba(0,0,0,0)",
 };
 
 const theme = createTheme({
@@ -116,4 +126,4 @@ const theme = createTheme({
   },
 });
 
-export { colors, theme };
+export { colors, theme, zLayer };

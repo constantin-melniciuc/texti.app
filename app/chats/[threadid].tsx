@@ -5,6 +5,7 @@ import Text from "../../src/components/Shared/Text";
 import { colors, theme } from "../../src/theme";
 import { Messages } from "../../src/components/Chat/Messages";
 import { MessageForm } from "../../src/components/Chat/MessageForm";
+import { UpsellPopup } from "../../src/components/Chat/UpsellPopup";
 
 export default function Page() {
   const { threadid } = useSearchParams<{ threadid: string }>();
@@ -45,6 +46,7 @@ export default function Page() {
     >
       <Messages />
       <MessageForm />
+      <UpsellPopup />
     </View>
   );
 }

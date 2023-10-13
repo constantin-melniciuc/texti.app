@@ -14,6 +14,7 @@ import {
   computed,
   runInAction,
 } from "mobx";
+import toastService from "./ToastService";
 
 export interface IMessage {
   createdAt: string;
@@ -50,6 +51,7 @@ export class ChatService {
   timeout: ReturnType<typeof setTimeout> | null = null;
   categories: Category = {};
   fetchingChats: boolean = false;
+  upsellReason: string = "monthly_limit_reached";
 
   constructor() {
     makeObservable(this, {
@@ -61,14 +63,15 @@ export class ChatService {
       conversations: observable,
       stopReason: observable,
       streamingMessage: observable,
+      upsellReason: observable,
       // actions
       init: action,
       setActiveChat: action,
       setActiveThreadId: action,
       setStreamingMessage: action,
+      dismissUpsell: action,
       // generators
       createConversation: flow,
-      eventSource: flow,
       fetchCategories: flow,
       fetchConversations: flow,
     });
@@ -144,7 +147,11 @@ export class ChatService {
       if (json.statusCode === 403) {
         throw new Error("Unauthorized");
       }
-      // yield this.fetchConversations(false);
+      if (response.status === 402) {
+        this.onError({ topic: json.reason });
+        toastService.show(json.data, "error");
+        return;
+      }
       this.setActiveThreadId(json.data.threadId);
 
       if (topic) {
@@ -165,7 +172,10 @@ export class ChatService {
 
       return json.data.threadId;
     } catch (error) {
-      console.warn(error.message, error.name);
+      toastService.show(
+        "Failed to create a new chat. Please try again later.",
+        "error"
+      );
       console.error("[ChatService].Err", error);
     }
   });
@@ -191,36 +201,39 @@ export class ChatService {
     );
   }
 
-  // @TODO: base on the error message show an alert / upsell / new chat etc.
-  _onError(error) {
-    console.error("[ChatService].Err", error);
+  dismissUpsell = () => {
+    this.upsellReason = "";
+  };
+
+  private onError = (error) => {
     if (error && error.topic) {
       if (error.topic === "monthly_limit_reached") {
-        // this._showMonthlyLimitReached();
+        runInAction(() => {
+          this.upsellReason = "monthly_limit_reached";
+        });
       }
 
       if (error.topic === "max_messages_reached") {
-        // this._showMaxMessagesReached();
+        runInAction(() => {
+          this.upsellReason = "max_messages_reached";
+        });
       }
       return;
     }
 
     if (error && error.status === 403) {
-      // this._alert.show({
-      //   message: "It seems your session has expired. Please login again.",
-      //   type: "error",
-      // });
+      toastService.show(
+        "It seems your session has expired. Please login again.",
+        "error"
+      );
 
       return;
     }
 
-    // this._alert.show({
-    //   message: "Something went wrong. Please try again later.",
-    //   type: "error",
-    // });
-  }
+    toastService.show("Something went wrong. Please try again later.", "error");
+  };
 
-  eventSource = flow(function* (
+  private eventSource = flow(function* (
     this: ChatService,
     {
       message,
@@ -265,7 +278,7 @@ export class ChatService {
       service.timeout = setTimeout(resetState, 10000);
 
       if (e.data === "max_messages_reached") {
-        return service._onError({ topic: "max_messages_reached" });
+        return service.onError({ topic: "max_messages_reached" });
       }
 
       // Assuming we receive JSON-encoded data payloads:
@@ -309,7 +322,11 @@ export class ChatService {
     ) {
       // errorTracker.trackError(e, { source: "eventSource", threadId });
       // error received
-      service._onError(e);
+      toastService.show(
+        "Failed to receive result, pleas reload the conversation",
+        "error"
+      );
+      service.onError(e);
       resetState();
     };
     source.addEventListener("message", messageListener);
