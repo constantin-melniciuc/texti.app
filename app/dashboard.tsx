@@ -11,7 +11,6 @@ import userService from "../src/services/UserService";
 import styled from "styled-components/native";
 
 const StyledCloseButton = styled(Icon)`
-  // position: absolute;
   top: ${theme.spacing.md}px;
   right: ${theme.spacing.md}px;
   padding: ${theme.spacing.md}px;

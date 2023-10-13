@@ -2,6 +2,7 @@ import { StyleSheet, View } from "react-native";
 import { Text, Button } from "@rneui/themed";
 import { useAuth } from "../src/contexts/auth";
 import { Stack } from "expo-router";
+import toastService from "../src/services/ToastService";
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -14,6 +15,10 @@ export default function HomePage() {
       />
       <View style={styles.main}>
         <Text h1>Welcome Back {user?.displayName}</Text>
+        <Button
+          title={"show toast"}
+          onPress={() => toastService.show("hello button")}
+        />
       </View>
     </View>
   );

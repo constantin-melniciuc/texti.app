@@ -6,6 +6,7 @@ import { ThemeProvider } from "@rneui/themed";
 import { theme } from "../src/theme";
 import { ChatProvider } from "../src/contexts/chat";
 import { Icon } from "@rneui/themed";
+import Toast from "../src/components/Shared/Toast";
 
 const tabBarIcon = ({ size, color, focused, iconName }) => {
   // You can return any component that you like here!
@@ -67,6 +68,7 @@ export default function Layout() {
               />
               <Tabs.Screen name="(auth)/sign-in" options={{ href: null }} />
             </Tabs>
+            <Toast />
           </SafeAreaProvider>
         </ThemeProvider>
       </ChatProvider>

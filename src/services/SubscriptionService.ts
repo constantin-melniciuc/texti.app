@@ -3,7 +3,6 @@ import userService from "./UserService";
 import { buildHeaders } from "./utils";
 import {
   action,
-  computed,
   flow,
   makeObservable,
   observable,

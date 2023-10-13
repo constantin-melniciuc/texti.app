@@ -2,12 +2,13 @@ import React, { useCallback, useState } from "react";
 import { Button, Icon, ListItem, Overlay } from "@rneui/themed";
 import Text from "../Shared/Text";
 import styled from "styled-components/native";
-import { colors, theme } from "../../theme";
+import { colors, theme, zLayer } from "../../theme";
 import { StyleSheet, View, ScrollView } from "react-native";
 import { KeyboardView } from "../Shared/KeyboardView";
 import { Header } from "@rneui/themed";
 import PageTitle from "../Shared/PageTitle";
 import { Category } from "../../services/ChatService";
+import { UpsellPopup } from "./UpsellPopup";
 
 const StyledInput = styled.TextInput`
   border: 1px solid ${colors.grayBorder};
@@ -114,7 +115,7 @@ const NewChatForm = ({ onSubmit, categories, hasError }: NewChatFormProps) => {
           />
         </View>
       </Container>
-      <Overlay isVisible={isOpen}>
+      <Overlay isVisible={isOpen} overlayStyle={{ zIndex: zLayer.modal - 1 }}>
         <Container $withoutPadding>
           <Header
             centerComponent={<PageTitle title="Browse topics" />}
@@ -145,7 +146,10 @@ const NewChatForm = ({ onSubmit, categories, hasError }: NewChatFormProps) => {
           </ScrollView>
         </Container>
       </Overlay>
-      <Overlay isVisible={!!selectedCategory}>
+      <Overlay
+        isVisible={!!selectedCategory}
+        overlayStyle={{ zIndex: zLayer.modal }}
+      >
         <Container $withoutPadding>
           <Header
             centerComponent={<PageTitle title={selectedCategory} />}
@@ -181,6 +185,7 @@ const NewChatForm = ({ onSubmit, categories, hasError }: NewChatFormProps) => {
           </ScrollView>
         </Container>
       </Overlay>
+      <UpsellPopup />
     </KeyboardView>
   );
 };
