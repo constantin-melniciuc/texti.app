@@ -1,17 +1,12 @@
-import { Tabs } from "expo-router";
+import { Stack } from "expo-router/stack";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AuthProvider } from "../src/contexts/auth";
 import Header from "../src/components/Shared/Header";
 import { ThemeProvider } from "@rneui/themed";
 import { theme } from "../src/theme";
 import { ChatProvider } from "../src/contexts/chat";
-import { Icon } from "@rneui/themed";
 import Toast from "../src/components/Shared/Toast";
-
-const tabBarIcon = ({ size, color, focused, iconName }) => {
-  // You can return any component that you like here!
-  return <Icon name={iconName} size={size} color={color} />;
-};
+import { BottomNavigation } from "../src/components/Shared/BottomNavigation";
 
 export default function Layout() {
   const commonHeaderOptions = {
@@ -22,53 +17,45 @@ export default function Layout() {
       <ChatProvider>
         <ThemeProvider theme={theme}>
           <SafeAreaProvider>
-            <Tabs>
-              <Tabs.Screen
+            <Stack>
+              <Stack.Screen
                 name="index"
                 options={{
                   ...commonHeaderOptions,
                   title: "Home",
-                  tabBarIcon: (props) =>
-                    tabBarIcon({ ...props, iconName: "home" }),
                 }}
               />
-              <Tabs.Screen
+              <Stack.Screen
                 name="chats/[threadid]"
                 options={{
                   ...commonHeaderOptions,
-                  href: null,
                 }}
               />
-              <Tabs.Screen
+              <Stack.Screen
                 name="chats/new"
                 options={{
                   ...commonHeaderOptions,
-                  href: "/chats/new",
                   title: "New Chat",
-                  tabBarIcon: (props) =>
-                    tabBarIcon({ ...props, iconName: "add-circle" }),
                 }}
               />
-              <Tabs.Screen
+              <Stack.Screen
                 name="chats/index"
                 options={{
                   ...commonHeaderOptions,
                   title: "Chats",
-                  tabBarIcon: (props) =>
-                    tabBarIcon({ ...props, iconName: "forum" }),
                 }}
               />
 
-              <Tabs.Screen
+              <Stack.Screen
                 name="dashboard"
                 options={{
                   ...commonHeaderOptions,
-                  href: null,
                 }}
               />
-              <Tabs.Screen name="(auth)/sign-in" options={{ href: null }} />
-            </Tabs>
+              <Stack.Screen name="(auth)/sign-in" />
+            </Stack>
             <Toast />
+            <BottomNavigation />
           </SafeAreaProvider>
         </ThemeProvider>
       </ChatProvider>

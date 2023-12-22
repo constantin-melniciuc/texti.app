@@ -39,7 +39,7 @@ export type BackendUser = {
 
 // for troubleshooting see
 // https://github.com/react-native-google-signin/google-signin/blob/master/docs/android-guide.md#google-login-does-not-work-when-using-internal-app-sharing
-class UserService {
+export class UserService {
   accessToken: string | null = null;
   user: FirebaseAuthTypes.User | null = null;
   backendUser: BackendUser | null = null;

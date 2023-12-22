@@ -10,7 +10,7 @@ export default function Avatar({ size = 64 }) {
   }
   return (
     <TouchableOpacity>
-      <Link href={"/dashboard"}>
+      <Link replace href="/dashboard">
         <RNAvatar
           size={size}
           title={user?.displayName}

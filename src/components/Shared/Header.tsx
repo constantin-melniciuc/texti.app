@@ -3,18 +3,33 @@ import Avatar from "./Avatar";
 import PageTitle from "./PageTitle";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { useAuth } from "../../contexts/auth";
+import { useNavigation } from "expo-router";
+import { StackActions } from "@react-navigation/native";
 
 export default function Header(props: NativeStackHeaderProps) {
   const routeName = props.route.name;
   const { user } = useAuth();
+  const navigation = useNavigation();
 
-  if (routeName === "sign-in" || routeName === "sign-up" || !user) return null;
+  const handlePopToTop = () => {
+    navigation.dispatch(StackActions.popToTop());
+  };
+
+  const navigateToChatList = () => {
+    navigation.dispatch(StackActions.pop());
+  };
+
+  if (routeName.includes("sign-in") || routeName.includes("sign-up") || !user)
+    return null;
   const navigateBack = () => {
     if (routeName === "index") return;
-    if (routeName === "chats/[threadid]" || routeName === "chats/new") {
-      return props.navigation.navigate("chats/index");
+    if (
+      routeName.includes("chats/[threadid]") ||
+      routeName.includes("chats/new")
+    ) {
+      return navigateToChatList();
     }
-    return props.navigation.goBack();
+    return handlePopToTop();
   };
 
   const title = props.options.title;
