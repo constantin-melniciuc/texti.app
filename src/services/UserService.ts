@@ -152,6 +152,7 @@ class UserService {
   });
 
   refreshTokens = flow(function* (this: UserService) {
+    if (this.isSigningIn) return this.accessToken;
     const { accessToken } = yield GoogleSignin.getTokens();
     runInAction(() => {
       this.accessToken = accessToken;

@@ -51,7 +51,7 @@ export class ChatService {
   timeout: ReturnType<typeof setTimeout> | null = null;
   categories: Category = {};
   fetchingChats: boolean = false;
-  upsellReason: string = "monthly_limit_reached";
+  upsellReason: string = "";
 
   constructor() {
     makeObservable(this, {

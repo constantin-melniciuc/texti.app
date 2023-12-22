@@ -11,11 +11,14 @@ import userService from "../src/services/UserService";
 import styled from "styled-components/native";
 
 const StyledCloseButton = styled(Icon)`
-  top: ${theme.spacing.md}px;
-  right: ${theme.spacing.md}px;
-  padding: ${theme.spacing.md}px;
-  background-color: ${colors.accentBlue};
   z-index: 1;
+`;
+
+const StyledTopBar = styled.View`
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
 `;
 
 const Feature = ({ isActive }: { isActive: boolean }) => {
@@ -156,10 +159,17 @@ export default function Dashboard() {
         onRequestClose={() => setVisible(false)}
         supportedOrientations={["portrait", "portrait-upside-down"]}
       >
+        <StyledTopBar>
+          <Text h3>Upgrade Plan</Text>
+          <StyledCloseButton
+            raised
+            name="close"
+            onPress={() => setVisible(false)}
+          />
+        </StyledTopBar>
         {source ? (
           <WebView source={{ uri: source }} style={{ flex: 1 }} />
         ) : null}
-        <StyledCloseButton name="close" onPress={() => setVisible(false)} />
       </Overlay>
       <View style={styles.container}>
         <Text weight="700" h3>
