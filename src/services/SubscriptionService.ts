@@ -56,7 +56,7 @@ const FREE_TIER_PRODUCT: SubscriptionType = {
   name: "Name",
 };
 
-class SubscriptionService {
+export class SubscriptionService {
   currentSubscription: SubscriptionType | null = null;
   subscriptions: SubscriptionType[] = [];
   coveredTiers: string[] = [];
