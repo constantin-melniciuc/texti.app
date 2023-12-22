@@ -1,39 +1,101 @@
-import { StyleSheet, View } from "react-native";
-import { Text, Button } from "@rneui/themed";
 import { useAuth } from "../src/contexts/auth";
-import { Stack } from "expo-router";
-import toastService from "../src/services/ToastService";
+import { Stack, useRouter, Link } from "expo-router";
+import styled from "styled-components/native";
+import { colors, theme } from "../src/theme";
+import Text from "../src/components/Shared/Text";
+import subscriptionService from "../src/services/SubscriptionService";
+import { Divider, Icon } from "@rneui/themed";
+import { TouchableOpacity } from "react-native";
+
+const StyledContainer = styled.View`
+  flex: 1;
+  align-items: center;
+  padding: 24px;
+`;
+
+const StyledMain = styled.ScrollView`
+  flex: 1;
+  max-width: 960px;
+  margin-horizontal: auto;
+`;
+
+const Row = styled.View`
+  margin-vertical: ${theme.spacing.md};
+  flex-direction: row;
+  align-items: center;
+  gap: ${theme.spacing.sm};
+  flex-wrap: wrap;
+`;
+
+const Content = styled.View`
+  margin-top: ${theme.spacing.lg * 4};
+`;
 
 export default function HomePage() {
-  const { user } = useAuth();
+  const { user, backendUser } = useAuth();
+  const { currentSubscription } = subscriptionService;
+  const router = useRouter();
   return (
-    <View style={styles.container}>
+    <StyledContainer>
       <Stack.Screen
         options={{
           title: "Home",
         }}
       />
-      <View style={styles.main}>
-        <Text h1>Welcome Back {user?.displayName}</Text>
-        <Button
-          title={"show toast"}
-          onPress={() => toastService.show("hello button")}
-        />
-      </View>
-    </View>
+      <StyledMain contentContainerStyle={{ justifyContent: "center", flex: 1 }}>
+        <Row>
+          <Text h1 h1Style={{ textAlign: "center" }}>
+            Welcome Back
+          </Text>
+          <Text h1 color="primary">
+            {user?.displayName}
+          </Text>
+        </Row>
+        {currentSubscription && backendUser ? (
+          <Content>
+            <Text h4 h4Style={{ fontWeight: "700" }}>
+              We though you'd like to know some stats
+            </Text>
+
+            <Row>
+              <Text>Max Monthly Questions:</Text>
+              <Text weight="700">
+                {backendUser?.monthlyPhraseCount}/
+                {currentSubscription.metadata.request_count}
+              </Text>
+            </Row>
+            <Row>
+              <Text>Max Monthly Chats:</Text>
+              <Text weight="700">
+                {backendUser?.monthlyChatCount}/
+                {currentSubscription.metadata.chat_count}
+              </Text>
+            </Row>
+            <Divider style={{ marginBottom: theme.spacing.lg * 2 }} />
+            <Row>
+              <Text>View more in your</Text>
+              <Link href="/dashboard">
+                <Row
+                  style={{
+                    marginVertical: 0,
+                    borderBottomColor: colors.accentBlue,
+                    borderBottomWidth: 1,
+                    borderStyle: "solid",
+                  }}
+                >
+                  <Text color="primary">Profile</Text>
+                  <Icon
+                    type="font-awesome-5"
+                    name="user-circle"
+                    size={16}
+                    color={colors.accentBlue}
+                  />
+                </Row>
+              </Link>
+            </Row>
+          </Content>
+        ) : null}
+      </StyledMain>
+    </StyledContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    padding: 24,
-  },
-  main: {
-    flex: 1,
-    justifyContent: "center",
-    maxWidth: 960,
-    marginHorizontal: "auto",
-  },
-});
