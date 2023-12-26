@@ -87,12 +87,12 @@ const Dashboard = observer(
           }}
         />
 
-        <Text h3>👋 {user?.displayName}</Text>
+        <Text h3>👋 {user?.displayName || "Innovator"}</Text>
         <View
           style={{ paddingLeft: theme.spacing.md, marginTop: theme.spacing.md }}
         >
-          <Text style={{}}>Welcome to your Dashboard</Text>
-          <Text style={{}}>Here you can manage your account.</Text>
+          <Text>Welcome to your Dashboard</Text>
+          <Text>Here you can manage your account.</Text>
         </View>
 
         <View style={styles.container}>
@@ -182,7 +182,12 @@ const Dashboard = observer(
             <WebView source={{ uri: source }} style={{ flex: 1 }} />
           ) : null}
         </Overlay>
-        <View style={styles.container}>
+        <View
+          style={StyleSheet.flatten([
+            styles.container,
+            { marginTop: theme.spacing.xl * 2 },
+          ])}
+        >
           <Text weight="700" h3>
             Already saying bye? 😢
           </Text>
@@ -212,7 +217,7 @@ const styles = StyleSheet.create({
     borderRadius: theme.spacing.sm,
     backgroundColor: colors.white,
     padding: theme.spacing.lg,
-    marginTop: theme.spacing.lg,
+    marginTop: theme.spacing.xl,
     elevation: 1,
     flexDirection: "column",
     alignItems: "stretch",

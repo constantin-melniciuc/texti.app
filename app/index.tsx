@@ -60,7 +60,7 @@ const HomePage = observer(
               Welcome Back
             </Text>
             <Text h1 color="primary">
-              {user?.displayName}
+              {user?.displayName || "Innovator"}
             </Text>
           </Row>
           {currentSubscription && backendUser ? (

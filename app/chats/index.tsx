@@ -3,8 +3,7 @@ import { ListItem } from "@rneui/themed";
 import { theme } from "../../src/theme";
 import RobotAvatar from "../../src/components/Shared/RobotAvatar";
 import { useCallback, useState } from "react";
-import { StackActions } from "@react-navigation/native";
-import { useNavigation } from "expo-router";
+import { useRouter } from "expo-router";
 import chatService, {
   ChatService,
   IChatListItem,
@@ -13,7 +12,7 @@ import { observer } from "mobx-react";
 
 const ChatPage = observer(({ service }: { service: ChatService }) => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const navigation = useNavigation();
+  const router = useRouter();
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -23,10 +22,7 @@ const ChatPage = observer(({ service }: { service: ChatService }) => {
 
   const onOpenChat = (threadId: string) => {
     service.setActiveThreadId(threadId);
-
-    navigation.dispatch(
-      StackActions.push(`chats/[threadid]`, { threadid: threadId })
-    );
+    router.push(`/chats/${threadId}`);
   };
 
   const _renderItem = ({
