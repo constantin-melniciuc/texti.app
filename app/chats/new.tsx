@@ -13,7 +13,7 @@ function New({ service }: { service: ChatService }) {
       setHasError(true);
       return;
     }
-    router.push(`/chats/${threadId}`);
+    router.replace(`/chats/${threadId}`);
   };
 
   return (

@@ -152,6 +152,16 @@ export class ChatService {
         toastService.show(json.data, "error");
         return;
       }
+      runInAction(() => {
+        this.conversations = [
+          ...this.conversations,
+          {
+            threadId: json.data.threadId,
+            messages: [],
+            date: new Date().toISOString(),
+          },
+        ];
+      });
       this.setActiveThreadId(json.data.threadId);
 
       if (topic) {
@@ -169,6 +179,8 @@ export class ChatService {
           role: "user",
         });
       }
+
+      this.fetchConversations();
 
       return json.data.threadId;
     } catch (error) {

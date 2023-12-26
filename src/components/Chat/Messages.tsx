@@ -5,7 +5,7 @@ import styled from "styled-components/native";
 import { observer } from "mobx-react";
 import { IconButton } from "../Shared/IconButton";
 import { Keyboard, ScrollView } from "react-native";
-import { Message, MessageText, MessagesContainer } from "./StyledComponents";
+import { Message, MessagesContainer, StyledMarkdown } from "./StyledComponents";
 
 const ButtonsContainer = styled.View`
   flex-flow: row-nowrap;
@@ -57,25 +57,25 @@ const MessagesView = observer(({ service }: { service: ChatService }) => {
     >
       {activeChat?.topic ? (
         <Message role="user">
-          <MessageText weight="500">{activeChat?.topic}</MessageText>
+          <StyledMarkdown>{activeChat?.topic}</StyledMarkdown>
         </Message>
       ) : null}
       {activeChat?.messages?.map((message) => {
         return (
           <Message role={message.role} key={message.createdAt}>
-            <MessageText weight="500">{message.content}</MessageText>
+            <StyledMarkdown>{message.content}</StyledMarkdown>
           </Message>
         );
       })}
       {streamingMessage ? (
         <Message role="assistant">
-          <MessageText weight="500">{streamingMessage}</MessageText>
+          <StyledMarkdown>{streamingMessage}</StyledMarkdown>
         </Message>
       ) : null}
       {stopReason === "length" ? (
         <ButtonsContainer>
           <Message role="assistant">
-            <MessageText weight="500">Continue?</MessageText>
+            <StyledMarkdown>Continue?</StyledMarkdown>
           </Message>
           <StyledIconButton
             name="done"

@@ -2,6 +2,7 @@ import Text from "../Shared/Text";
 import { colors, theme } from "../../theme";
 import styled from "styled-components/native";
 import { IMessage } from "../../services/ChatService";
+import Markdown from "react-native-markdown-display";
 
 export const MessagesContainer = styled.ScrollView`
   flex: 1;
@@ -27,7 +28,18 @@ export const Message = styled.View<{ role: IMessage["role"] }>`
   margin-left: ${({ role }) => (role === "user" ? theme.spacing.xl : 0)}px;
 `;
 
-export const MessageText = styled(Text)`
-  word-break: break-word;
-  white-space: break-spaces;
-`;
+export const MessageText = styled(Text)``;
+
+export const StyledMarkdown = ({ children }: { children: string }) => (
+  <Markdown
+    style={{
+      body: {
+        fontSize: 16,
+        fontWeight: "500",
+        color: colors.contentBlack,
+      },
+    }}
+  >
+    {children}
+  </Markdown>
+);
