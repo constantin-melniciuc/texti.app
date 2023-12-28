@@ -109,14 +109,14 @@ const icons = [
 ];
 
 const customIcons = {
-  PlusSign: PlusSign,
+  PlusSign,
 };
 
-interface IRobotoAvatar {
+type IRobotoAvatar = {
   index?: number;
   size?: number;
   icon?: keyof typeof customIcons;
-}
+};
 export default function RobotAvatar({
   index = 0,
   size = 64,

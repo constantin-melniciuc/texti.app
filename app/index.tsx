@@ -66,7 +66,7 @@ const HomePage = observer(
           {currentSubscription && backendUser ? (
             <Content>
               <Text h4 h4Style={{ fontWeight: "700" }}>
-                We though you'd like to know some stats
+                We though you&apos;d like to know some stats
               </Text>
 
               <Row>

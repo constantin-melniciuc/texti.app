@@ -13,7 +13,7 @@ const MessageFormContainer = styled.View`
 const MessageFormView = observer(({ service }: { service: ChatService }) => {
   const [message, setMessage] = useState<string>("");
 
-  const onSubmit = async () => {
+  const onSubmit = () => {
     service.sendMessage(message);
     setMessage("");
   };
@@ -31,7 +31,7 @@ const MessageFormView = observer(({ service }: { service: ChatService }) => {
           paddingVertical: 8,
           paddingHorizontal: 16,
         }}
-        onPress={() => onSubmit()}
+        onPress={onSubmit}
         disabled={!message}
         icon={{
           name: "send",

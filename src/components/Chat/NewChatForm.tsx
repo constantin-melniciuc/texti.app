@@ -1,11 +1,10 @@
 import React, { useCallback, useState } from "react";
-import { Button, Icon, ListItem, Overlay } from "@rneui/themed";
+import { Button, Icon, ListItem, Overlay, Header } from "@rneui/themed";
 import Text from "../Shared/Text";
 import styled from "styled-components/native";
 import { colors, theme, zLayer } from "../../theme";
 import { StyleSheet, View, ScrollView } from "react-native";
 import { KeyboardView } from "../Shared/KeyboardView";
-import { Header } from "@rneui/themed";
 import PageTitle from "../Shared/PageTitle";
 import { Category } from "../../services/ChatService";
 import { UpsellPopup } from "./UpsellPopup";
@@ -59,7 +58,7 @@ const NewChatForm = ({ onSubmit, categories, hasError }: NewChatFormProps) => {
             h4
             h4Style={{ fontWeight: "100", marginBottom: theme.spacing.md }}
           >
-            Before we start, let's define a topic for our conversation
+            Before we start, let&apos;s define a topic for our conversation
           </Text>
 
           <Text h4 h4Style={styles.helpText}>

@@ -78,7 +78,7 @@ export class SubscriptionService {
 
     when(
       () => userService.backendUser !== null,
-      () => this.init()
+      async () => await this.init()
     );
 
     when(

@@ -1,10 +1,10 @@
 import { Text as RNText, TextProps as RNTextProps } from "@rneui/themed";
 import { colors } from "../../theme";
 
-interface TextProps extends RNTextProps {
+type TextProps = RNTextProps & {
   color?: "black" | "white" | "gray" | "red" | "primary";
   weight?: "100" | "200" | "300" | "400" | "500" | "600" | "700" | "800";
-}
+};
 
 const computeColor = (color: TextProps["color"]) => {
   switch (color) {

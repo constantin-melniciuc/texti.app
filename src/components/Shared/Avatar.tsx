@@ -4,7 +4,7 @@ import { Link } from "expo-router";
 import { TouchableOpacity } from "react-native";
 import { colors } from "../../theme";
 
-export default function Avatar({ size = 64 }) {
+export default function Avatar({ size = 64 }: { size?: number }) {
   const { user } = useAuth();
   if (!user) {
     return null;

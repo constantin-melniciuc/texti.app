@@ -67,6 +67,7 @@ const Dashboard = observer(
           setSource(checkoutUrl);
         }
       };
+
       getCheckoutUrl();
     }, [visible]);
 
@@ -195,7 +196,7 @@ const Dashboard = observer(
             containerStyle={{ marginTop: theme.spacing.xl }}
             color={theme.darkColors.error}
             title="Logout"
-            onPress={() => userService.signOut()}
+            onPress={async () => await userService.signOut()}
           />
         </View>
       </ScrollView>

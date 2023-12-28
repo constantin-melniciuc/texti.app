@@ -39,7 +39,11 @@ function useProtectedRoute(user) {
   }, [user, segments]);
 }
 
-export function AuthProvider(props) {
+type Props = {
+  children: React.ReactNode;
+};
+
+export function AuthProvider(props: Props) {
   const [user, setUser] = useState(null);
 
   const loginWithGoogle = async () => {

@@ -6,9 +6,9 @@ import {
 } from "react-native";
 import React from "react";
 
-interface KeyboardViewProps extends KeyboardAvoidingViewProps {
+type KeyboardViewProps = KeyboardAvoidingViewProps & {
   children: React.ReactNode;
-}
+};
 
 export const KeyboardView = ({
   children,

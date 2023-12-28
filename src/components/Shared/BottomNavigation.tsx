@@ -2,6 +2,7 @@ import { Icon } from "@rneui/themed";
 import { Link, usePathname } from "expo-router";
 import styled from "styled-components/native";
 import { colors, theme } from "../../theme";
+import { useAuth } from "../../contexts/auth";
 
 const StyledContainer = styled.View`
   align-items: stretch;
@@ -33,7 +34,9 @@ export const BottomNavigation = () => {
   const isHome = pathname === "/";
   const isNewChat = pathname === "/chats/new";
   const isChats = pathname.startsWith("/chats") && !isNewChat;
+  const { user } = useAuth();
 
+  if (!user) return null;
   return (
     <StyledContainer>
       <Link href="/" asChild>

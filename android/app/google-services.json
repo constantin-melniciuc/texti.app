@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "480396033678-98g171h2m23gc846quqogdkkuqhtqkaj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.muzedigital.texti",
+            "certificate_hash": "40c60d2ab881c8a6370fac0cbcda7c9787eead5c"
+          }
+        },
+        {
           "client_id": "480396033678-imlo9lrpcaub6h57ck5bnnaruvvc1i35.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

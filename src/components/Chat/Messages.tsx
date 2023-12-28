@@ -80,12 +80,12 @@ const MessagesView = observer(({ service }: { service: ChatService }) => {
           <StyledIconButton
             name="done"
             color={colors.hoverGreen}
-            onPress={service.continueStream}
+            onPress={() => service.continueStream()}
           />
           <StyledIconButton
             name="close"
             color={colors.errorRed}
-            onPress={service.endStream}
+            onPress={() => service.endStream()}
           />
         </ButtonsContainer>
       ) : null}

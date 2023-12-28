@@ -3,12 +3,11 @@ import {
   GoogleSignin,
   statusCodes,
 } from "@react-native-google-signin/google-signin";
-import { API_URL, GOOGLE_CLIENT_ID } from "@env";
+import { API_URL, GOOGLE_CLIENT_ID, AUTH_JWT_SIGNATURE } from "@env";
 import { SUBSCRIPTION_NAMES } from "./SubscriptionService";
 import { action, flow, makeObservable, observable, runInAction } from "mobx";
 import { buildHeaders } from "./utils";
 import { sign } from "react-native-pure-jwt";
-import { AUTH_JWT_SIGNATURE } from "@env";
 import {
   captureException,
   captureEvent,
@@ -97,7 +96,9 @@ export class UserService {
       const user = yield GoogleSignin.signIn();
 
       // Create a Google credential with the token
-      const googleCredential = auth.GoogleAuthProvider.credential(user.idToken);
+      const googleCredential = auth.GoogleAuthProvider.credential(
+        user.idToken as string
+      );
 
       // Sign-in the user with the credential
       const result = yield auth().signInWithCredential(googleCredential);
@@ -181,7 +182,7 @@ export class UserService {
     }
   });
 
-  private getMe = flow(function* (this: UserService) {
+  private readonly getMe = flow(function* (this: UserService) {
     try {
       if (this.user === null) return null;
       const token = yield this.getTokens();
@@ -203,7 +204,7 @@ export class UserService {
         return null;
       }
 
-      this.setBackendUser(json);
+      this.setBackendUser(json as BackendUser);
       return json;
     } catch (error) {
       console.error("[UserService].Err", error);

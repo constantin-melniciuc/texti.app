@@ -18,29 +18,29 @@ import {
 import toastService from "./ToastService";
 import { captureException, captureEvent } from "@sentry/react-native";
 
-export interface IMessage {
+export type IMessage = {
   createdAt: string;
   content: string;
   role: "system" | "user" | "assistant";
-}
+};
 
-export interface IChatListItem {
+export type IChatListItem = {
   threadId: string;
   topic?: string;
   messages: IMessage[];
   date: string;
   modified?: number;
-}
+};
 
-export interface Prompt {
+export type Prompt = {
   title: string;
   prompt: string;
   message: string;
-}
+};
 
-export interface Category {
+export type Category = {
   [key: string]: Prompt[];
-}
+};
 
 export class ChatService {
   conversations: IChatListItem[] = [];
@@ -168,7 +168,7 @@ export class ChatService {
       }
       if (response.status === 402) {
         this.onError({ topic: json.reason });
-        toastService.show(json.data, "error");
+        toastService.show(json.data as string, "error");
         return;
       }
       runInAction(() => {
@@ -181,7 +181,7 @@ export class ChatService {
           },
         ];
       });
-      this.setActiveThreadId(json.data.threadId);
+      this.setActiveThreadId(json.data.threadId as string);
 
       if (topic) {
         this.appendMessageToThread({
@@ -240,8 +240,8 @@ export class ChatService {
     this.upsellReason = "";
   };
 
-  private onError = (error) => {
-    if (error && error.topic) {
+  private readonly onError = (error) => {
+    if (error?.topic) {
       if (error.topic === "monthly_limit_reached") {
         runInAction(() => {
           this.upsellReason = "monthly_limit_reached";
@@ -268,7 +268,7 @@ export class ChatService {
     toastService.show("Something went wrong. Please try again later.", "error");
   };
 
-  private eventSource = flow(function* (
+  private readonly eventSource = flow(function* (
     this: ChatService,
     {
       message,
@@ -399,12 +399,12 @@ export class ChatService {
     this.eventSource({ message, topic: this.activeChat.topic });
   }
 
-  continueStream() {
+  continueStream = () => {
     this.eventSource({
       message: "continue",
       topic: "",
     });
-  }
+  };
 
   endStream() {
     runInAction(() => {

@@ -10,7 +10,11 @@ export function useChat() {
   return useContext(ChatContext);
 }
 
-export function ChatProvider(props) {
+type Props = {
+  children: React.ReactNode;
+};
+
+export function ChatProvider(props: Props) {
   const [chats, setChats] = useState<IChatListItem[]>([]);
 
   async function refetchChats() {

@@ -1,23 +1,5 @@
 import React, { useRef, useState } from "react";
-import styled from "styled-components/native";
-import Text from "../Shared/Text";
-import { theme } from "../../theme";
-import { Animated, View } from "react-native";
-import { StyleSheet } from "react-native";
-
-const Container = styled.View`
-  position: absolute;
-  background-color: #000;
-  padding: 8px;
-  padding-horizontal: ${theme.spacing.md}px;
-  margin-top: ${theme.spacing.sm}px;
-  left: 0;
-  top: 0;
-  border-radius: ${theme.spacing.sm}px;
-  z-index: 2;
-`;
-
-const TooltipText = styled(Text)``;
+import { Animated, View, StyleSheet } from "react-native";
 
 const Tooltip = ({
   children,

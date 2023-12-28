@@ -4,7 +4,6 @@ import { Button, Icon, Image } from "@rneui/themed";
 import { theme } from "../../src/theme";
 import Text from "../../src/components/Shared/Text";
 import { Stack, Tabs } from "expo-router";
-import { API_URL } from "@env";
 
 export default function SignIn() {
   const { signInWithGoogle } = useAuth();
@@ -39,7 +38,7 @@ export default function SignIn() {
         <Text h1>Welcome to Texti</Text>
       </View>
       <View style={{ marginTop: theme.spacing.lg * 4 }}>
-        <Button type="solid" onPress={() => signInWithGoogle()}>
+        <Button type="solid" onPress={async () => await signInWithGoogle()}>
           Login with{" "}
           <Icon
             type="antdesign"
