@@ -5,17 +5,15 @@ import {
 } from "@react-native-google-signin/google-signin";
 import { API_URL, GOOGLE_CLIENT_ID } from "@env";
 import { SUBSCRIPTION_NAMES } from "./SubscriptionService";
-import {
-  action,
-  flow,
-  makeObservable,
-  observable,
-  runInAction,
-  when,
-} from "mobx";
+import { action, flow, makeObservable, observable, runInAction } from "mobx";
 import { buildHeaders } from "./utils";
 import { sign } from "react-native-pure-jwt";
 import { AUTH_JWT_SIGNATURE } from "@env";
+import {
+  captureException,
+  captureEvent,
+  configureScope,
+} from "@sentry/react-native";
 
 GoogleSignin.configure({
   scopes: ["email", "name", "profile"],
@@ -57,27 +55,24 @@ export class UserService {
       setBackendUser: action,
       setUser: action,
       // generators
-      getMe: flow,
       getTokens: flow,
       signIn: flow,
       signInWithGoogle: flow,
       signOut: flow,
     });
-
-    when(
-      () =>
-        this.accessToken !== null &&
-        this.isSigningIn === false &&
-        this.backendUser === null,
-      () => {
-        this.getMe();
-      }
-    );
   }
 
   setUser(user: FirebaseAuthTypes.User | null) {
     this.user = user;
     this.refreshTokens();
+    this.getMe();
+
+    configureScope((scope) => {
+      scope.setUser({
+        id: user?.uid,
+        email: user?.email,
+      });
+    });
   }
 
   setBackendUser(backendUser: BackendUser | null) {
@@ -111,12 +106,24 @@ export class UserService {
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow
+        captureEvent({
+          level: "info",
+          message: "User cancelled login flow",
+        });
       } else if (error.code === statusCodes.IN_PROGRESS) {
+        captureEvent({
+          level: "info",
+          message: "User already in progress",
+        });
         // operation (e.g. sign in) is in progress already
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         // play services not available or outdated
+        captureException(error, {
+          tags: { error: "play_services_not_available" },
+        });
       } else {
         // some other error happened
+        captureException(error, { tags: { error: "other" } });
       }
     } finally {
       runInAction(() => {
@@ -142,26 +149,41 @@ export class UserService {
     runInAction(() => {
       this.isSigningIn = true;
     });
-    const { accessToken } = yield GoogleSignin.getTokens();
+    try {
+      const { accessToken } = yield GoogleSignin.getTokens();
+      runInAction(() => {
+        this.accessToken = accessToken;
+        this.isSigningIn = false;
+      });
 
-    runInAction(() => {
-      this.accessToken = accessToken;
-      this.isSigningIn = false;
-    });
-    return accessToken;
+      return accessToken;
+    } catch (error) {
+      captureException(error, {
+        tags: { error: "get_tokens" },
+        user: this.user,
+      });
+    }
   });
 
   refreshTokens = flow(function* (this: UserService) {
     if (this.isSigningIn) return this.accessToken;
-    const { accessToken } = yield GoogleSignin.getTokens();
-    runInAction(() => {
-      this.accessToken = accessToken;
-      this.isSigningIn = false;
-    });
+    try {
+      const { accessToken } = yield GoogleSignin.getTokens();
+      runInAction(() => {
+        this.accessToken = accessToken;
+        this.isSigningIn = false;
+      });
+    } catch (error) {
+      captureException(error, {
+        tags: { error: "refresh_tokens" },
+        user: this.user,
+      });
+    }
   });
 
-  getMe = flow(function* (this: UserService) {
+  private getMe = flow(function* (this: UserService) {
     try {
+      if (this.user === null) return null;
       const token = yield this.getTokens();
 
       const headers = buildHeaders({
@@ -186,19 +208,30 @@ export class UserService {
     } catch (error) {
       console.error("[UserService].Err", error);
       this.setBackendUser(null);
+      captureException(error, {
+        tags: { error: "get_me" },
+        user: this.user,
+      });
     }
   });
 
   createWebUrl = async () => {
-    const token = this.accessToken;
-    const userId = this.user.providerData[0].uid;
+    try {
+      const token = this.accessToken;
+      const userId = this.user.providerData[0].uid;
 
-    const signature = await sign({ userId, token }, AUTH_JWT_SIGNATURE, {
-      alg: "HS256",
-    });
+      const signature = await sign({ userId, token }, AUTH_JWT_SIGNATURE, {
+        alg: "HS256",
+      });
 
-    const url = `${API_URL}/user/profile/access?signature=${signature}`;
-    return url;
+      const url = `${API_URL}/user/profile/access?signature=${signature}`;
+      return url;
+    } catch (error) {
+      captureException(error, {
+        tags: { error: "create_web_url" },
+        user: this.user,
+      });
+    }
   };
 }
 

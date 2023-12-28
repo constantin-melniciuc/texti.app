@@ -1,0 +1,52 @@
+{
+  "cli": {
+    "version": ">= 5.9.3"
+  },
+  "build": {
+    "development": {
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "ios": {
+        "buildConfiguration": "Debug"
+      }
+    },
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "preview3": {
+      "developmentClient": true
+    },
+    "preview4": {
+      "distribution": "internal"
+    },
+    "production": {
+      "env": {
+        "ENV": "production",
+        "API_URL": "https://texti.app",
+        "APP_NAME": "Texti",
+        "AUTH_JWT_SIGNATURE": "private-key",
+        "IOS_APP_ID": "1:480396033678:ios:925004020477a4520513df",
+        "IOS_ENCODED_APP_ID": "app-1-480396033678-ios-925004020477a4520513df",
+        "ANDROID_APP_ID": "1:480396033678:android:8ec13389811369590513df",
+        "BUNDLE_ID": "com.muzedigital.texti",
+        "API_KEY": "private-key",
+        "AUTH_DOMAIN": "texti-375313.firebaseapp.com",
+        "PROJECT_ID": "texti-375313",
+        "STORAGE_BUCKET": "texti-375313.appspot.com",
+        "GOOGLE_CLIENT_ID": "480396033678-7bm8p20i2s6alu04coo57q6b3sadjtd8.apps.googleusercontent.com"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

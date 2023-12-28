@@ -2,7 +2,7 @@ module.exports = {
   expo: {
     scheme: "Texti",
     name: "Texti",
-    slug: "Texti",
+    slug: "textiapp",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
@@ -30,6 +30,12 @@ module.exports = {
       favicon: "./assets/favicon.png",
       bundler: "metro",
     },
+    extra: {
+      eas: {
+        projectId: "5110530d-c44c-4169-85d2-5200aee2d8f3",
+      },
+    },
+    owner: "textiapp",
   },
   plugins: [
     "@react-native-firebase/app",

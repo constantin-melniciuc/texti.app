@@ -9,6 +9,7 @@ import {
   runInAction,
   when,
 } from "mobx";
+import { captureException } from "@sentry/react-native";
 
 export enum SUBSCRIPTION_NAMES {
   free = "free",
@@ -125,7 +126,10 @@ export class SubscriptionService {
         this.subscriptions = [FREE_TIER_PRODUCT, ...json.data];
       });
     } catch (error) {
-      console.error("[SubscriptionService].Err", error);
+      captureException(error, {
+        tags: { error: "get_subscriptions" },
+        user: userService.user,
+      });
     }
   });
 }

@@ -4,6 +4,7 @@ import { Button, Icon, Image } from "@rneui/themed";
 import { theme } from "../../src/theme";
 import Text from "../../src/components/Shared/Text";
 import { Stack, Tabs } from "expo-router";
+import { API_URL } from "@env";
 
 export default function SignIn() {
   const { signInWithGoogle } = useAuth();

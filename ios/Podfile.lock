@@ -620,8 +620,16 @@ PODS:
   - RNScreens (3.20.0):
     - React-Core
     - React-RCTImage
+  - RNSentry (5.15.2):
+    - hermes-engine
+    - React-Core
+    - React-hermes
+    - Sentry/HybridSDK (= 8.17.1)
   - RNSVG (13.4.0):
     - React-Core
+  - Sentry/HybridSDK (8.17.1):
+    - SentryPrivate (= 8.17.1)
+  - SentryPrivate (8.17.1)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -689,6 +697,7 @@ DEPENDENCIES:
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNSVG (from `../node_modules/react-native-svg`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -713,6 +722,8 @@ SPEC REPOS:
     - libevent
     - nanopb
     - PromisesObjC
+    - Sentry
+    - SentryPrivate
 
 EXTERNAL SOURCES:
   boost:
@@ -839,6 +850,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSentry:
+    :path: "../node_modules/@sentry/react-native"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   Yoga:
@@ -926,9 +939,12 @@ SPEC CHECKSUMS:
   RNGoogleSignin: ccaa4a81582cf713eea562c5dd9dc1961a715fd0
   RNReanimated: cc5e3aa479cb9170bcccf8204291a6950a3be128
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
+  RNSentry: b7f4f53bb7076f119558f8898fca901b48213f12
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
+  Sentry: d9f99f9cc13777c5d938650c1e1c85047bb4f0d1
+  SentryPrivate: 839b1e58addf58624087a80b2628e543193fa8ef
   Yoga: 065f0b74dba4832d6e328238de46eb72c5de9556
 
 PODFILE CHECKSUM: 3b13b98a0c9422ba431f9c5bd99f5132d54adc7b
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.14.3

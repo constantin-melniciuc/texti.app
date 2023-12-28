@@ -1,5 +1,4 @@
 import { useEffect, useContext, createContext, useState } from "react";
-import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import chatService, { IChatListItem } from "../services/ChatService";
 
 const ChatContext = createContext<{
@@ -21,17 +20,6 @@ export function ChatProvider(props) {
 
   useEffect(() => {
     refetchChats();
-  }, []);
-
-  async function onAuthStateChanged(user: FirebaseAuthTypes.User) {
-    if (user) {
-      await chatService.init();
-      setChats(chatService.conversations);
-    }
-  }
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
   }, []);
 
   return (

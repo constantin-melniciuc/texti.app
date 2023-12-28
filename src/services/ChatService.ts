@@ -13,8 +13,10 @@ import {
   flow,
   computed,
   runInAction,
+  when,
 } from "mobx";
 import toastService from "./ToastService";
+import { captureException, captureEvent } from "@sentry/react-native";
 
 export interface IMessage {
   createdAt: string;
@@ -75,27 +77,39 @@ export class ChatService {
       fetchCategories: flow,
       fetchConversations: flow,
     });
+
+    when(
+      () => userService.user !== null,
+      () => this.init()
+    );
   }
 
-  init() {
+  init = () => {
     this.fetchConversations();
     this.fetchCategories();
-  }
+  };
 
   fetchCategories = flow(function* (this: ChatService) {
-    const response = yield fetch(`${API_URL}/chat/templates`, {
-      method: "GET",
-    });
+    try {
+      const response = yield fetch(`${API_URL}/chat/templates`, {
+        method: "GET",
+      });
 
-    const json = yield response.json();
+      const json = yield response.json();
 
-    runInAction(() => {
-      this.categories = json;
-    });
+      runInAction(() => {
+        this.categories = json;
+      });
+    } catch (error) {
+      captureException(error, {
+        tags: { error: "fetch_categories" },
+        user: userService.user,
+      });
+    }
   });
 
   fetchConversations = flow(function* (this: ChatService, retry = true) {
-    if (this.fetchingChats) return;
+    if (this.fetchingChats || !userService.user) return;
     try {
       this.fetchingChats = true;
       const token = yield userService.getTokens();
@@ -119,6 +133,10 @@ export class ChatService {
       return json.data;
     } catch (error) {
       console.error("[ChatService].Err", error);
+      captureException(error, {
+        tags: { error: "fetch_conversations" },
+        user: userService.user,
+      });
     } finally {
       this.fetchingChats = false;
     }
@@ -128,6 +146,7 @@ export class ChatService {
     this: ChatService,
     { topic = "", message = "" }: { topic?: string; message?: string }
   ) {
+    if (!userService.user) return null;
     try {
       const token = yield userService.getTokens();
       const headers = buildHeaders({
@@ -188,6 +207,10 @@ export class ChatService {
         "Failed to create a new chat. Please try again later.",
         "error"
       );
+      captureException(error, {
+        tags: { error: "create_conversation" },
+        user: userService.user,
+      });
       console.error("[ChatService].Err", error);
     }
   });
@@ -290,6 +313,12 @@ export class ChatService {
       service.timeout = setTimeout(resetState, 10000);
 
       if (e.data === "max_messages_reached") {
+        captureEvent({
+          message: "Max messages reached",
+          level: "info",
+          extra: { threadId: service.activeThreadId },
+          user: userService.user,
+        });
         return service.onError({ topic: "max_messages_reached" });
       }
 
@@ -332,8 +361,10 @@ export class ChatService {
     const errorListener: EventSourceListener<"error"> = function (
       e: CustomEvent<"error">
     ) {
-      // errorTracker.trackError(e, { source: "eventSource", threadId });
-      // error received
+      captureException(e, {
+        tags: { error: "event_source" },
+        user: userService.user,
+      });
       toastService.show(
         "Failed to receive result, pleas reload the conversation",
         "error"

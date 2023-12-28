@@ -13,3 +13,6 @@ local.properties
 
 # Bundle artifacts
 *.jsbundle
+
+# Builds
+app/release/*

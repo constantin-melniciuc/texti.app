@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "useDefineForClassFields": true
+    "useDefineForClassFields": true,
+    "noUnusedLocals": true,
   },
   "extends": "expo/tsconfig.base",
 }
