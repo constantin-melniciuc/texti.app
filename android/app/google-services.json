@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "480396033678-hm962rto617tpp8i8qv0dk175hekkqv5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.muzedigital.texti",
+            "certificate_hash": "59a2261693a661af2e5be036ef871bd350f418ee"
+          }
+        },
+        {
           "client_id": "480396033678-imlo9lrpcaub6h57ck5bnnaruvvc1i35.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
