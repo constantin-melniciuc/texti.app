@@ -52,8 +52,10 @@ export class ChatService {
   stopReason: "ended" | "length" = "ended";
   timeout: ReturnType<typeof setTimeout> | null = null;
   categories: Category = {};
-  fetchingChats: boolean = false;
   upsellReason: string = "";
+
+  // private
+  private fetchingChats: boolean = false;
 
   constructor() {
     makeObservable(this, {
@@ -67,7 +69,6 @@ export class ChatService {
       streamingMessage: observable,
       upsellReason: observable,
       // actions
-      init: action,
       setActiveChat: action,
       setActiveThreadId: action,
       setStreamingMessage: action,
@@ -76,18 +77,19 @@ export class ChatService {
       createConversation: flow,
       fetchCategories: flow,
       fetchConversations: flow,
+      init: flow,
     });
 
     when(
-      () => userService.user !== null,
-      () => this.init()
+      () => userService.user !== null && userService.accessToken !== null,
+      async () => await this.init()
     );
   }
 
-  init = () => {
-    this.fetchConversations();
-    this.fetchCategories();
-  };
+  init = flow(function* (this: ChatService) {
+    yield this.fetchConversations();
+    yield this.fetchCategories();
+  });
 
   fetchCategories = flow(function* (this: ChatService) {
     try {
