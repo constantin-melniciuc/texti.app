@@ -79,7 +79,6 @@ export class UserService {
     runInAction(() => {
       this.user = user;
     });
-    await this.refreshTokens();
 
     configureScope((scope) => {
       scope.setUser({
@@ -118,7 +117,8 @@ export class UserService {
       );
 
       // Sign-in the user with the credential
-      const result = yield auth().signInWithCredential(googleCredential);
+      const result: FirebaseAuthTypes.UserCredential =
+        yield auth().signInWithCredential(googleCredential);
 
       return result;
     } catch (error) {
@@ -155,7 +155,7 @@ export class UserService {
   // }
 
   signOut = flow(function* (this: UserService) {
-    return auth().signOut();
+    return yield auth().signOut();
   });
 
   getCurrentUser(): FirebaseAuthTypes.User | null {
@@ -183,26 +183,11 @@ export class UserService {
     }
   });
 
-  refreshTokens = flow(function* (this: UserService) {
-    if (this.isSigningIn) return this.accessToken;
-    try {
-      const { accessToken } = yield GoogleSignin.getTokens();
-      runInAction(() => {
-        this.accessToken = accessToken;
-        this.isSigningIn = false;
-      });
-    } catch (error) {
-      captureException(error, {
-        tags: { error: "refresh_tokens" },
-        user: this.user,
-      });
-    }
-  });
-
   private readonly getMe = flow(function* (this: UserService) {
     try {
       if (this.user === null) return null;
       const token = yield this.getTokens();
+      if (!token) return null;
 
       const headers = buildHeaders({
         token,

@@ -1,5 +1,8 @@
 import { useEffect, useContext, createContext, useState } from "react";
-import chatService, { IChatListItem } from "../services/ChatService";
+import chatServiceInstance, {
+  ChatService,
+  IChatListItem,
+} from "../services/ChatService";
 
 const ChatContext = createContext<{
   chats: IChatListItem[];
@@ -12,14 +15,15 @@ export function useChat() {
 
 type Props = {
   children: React.ReactNode;
+  service: ChatService;
 };
 
-export function ChatProvider(props: Props) {
+const _ChatProvider = ({ service, children }: Props) => {
   const [chats, setChats] = useState<IChatListItem[]>([]);
 
   async function refetchChats() {
-    await chatService.fetchConversations();
-    setChats(chatService.conversations);
+    await service.fetchConversations();
+    setChats(service.conversations);
   }
 
   useEffect(() => {
@@ -33,7 +37,11 @@ export function ChatProvider(props: Props) {
         refetchChats,
       }}
     >
-      {props.children}
+      {children}
     </ChatContext.Provider>
   );
+};
+
+export function ChatProvider(props: Omit<Props, "service">) {
+  return <_ChatProvider {...props} service={chatServiceInstance} />;
 }

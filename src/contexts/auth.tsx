@@ -1,6 +1,9 @@
 import { useRouter, useSegments } from "expo-router";
 import { useEffect, createContext, useState } from "react";
-import userService, { BackendUser, UserService } from "../services/UserService";
+import userServiceInstance, {
+  BackendUser,
+  UserService,
+} from "../services/UserService";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { observer } from "mobx-react";
 
@@ -65,5 +68,5 @@ const _AuthProvider = observer(({ children, service }: Props) => {
 });
 
 export function AuthProvider(props: Omit<Props, "service">) {
-  return <_AuthProvider {...props} service={userService} />;
+  return <_AuthProvider {...props} service={userServiceInstance} />;
 }

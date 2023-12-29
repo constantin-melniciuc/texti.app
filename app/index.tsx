@@ -5,9 +5,10 @@ import Text from "../src/components/Shared/Text";
 import subscriptionServiceInstance, {
   SubscriptionService,
 } from "../src/services/SubscriptionService";
-import { Divider, Icon } from "@rneui/themed";
+import { Divider, Icon, Skeleton } from "@rneui/themed";
 import userServiceInstance, { UserService } from "../src/services/UserService";
 import { observer } from "mobx-react";
+import { useEffect, useState } from "react";
 
 const StyledContainer = styled.View`
   flex: 1;
@@ -44,6 +45,14 @@ const HomePage = observer(
     const { user, backendUser } = userService;
     const { currentSubscription } = subscriptionService;
 
+    const [loading, setLoading] = useState(
+      !backendUser || !currentSubscription
+    );
+
+    useEffect(() => {
+      setLoading(!backendUser || !currentSubscription);
+    }, [backendUser, currentSubscription]);
+
     return (
       <StyledContainer>
         <Stack.Screen
@@ -63,50 +72,57 @@ const HomePage = observer(
               {user?.displayName || "Innovator"}
             </Text>
           </Row>
-          {currentSubscription && backendUser ? (
-            <Content>
-              <Text h4 h4Style={{ fontWeight: "700" }}>
-                We though you&apos;d like to know some stats
-              </Text>
 
-              <Row>
-                <Text>Max Monthly Questions:</Text>
+          <Content>
+            <Text h4 h4Style={{ fontWeight: "700" }}>
+              We though you&apos;d like to know some stats
+            </Text>
+
+            <Row>
+              <Text>Max Monthly Questions:</Text>
+              {loading ? (
+                <Skeleton animation="pulse" width={90} height={20} />
+              ) : (
                 <Text weight="700">
                   {backendUser?.monthlyPhraseCount}/
-                  {currentSubscription.metadata.request_count}
+                  {currentSubscription?.metadata.request_count}
                 </Text>
-              </Row>
-              <Row>
-                <Text>Max Monthly Chats:</Text>
+              )}
+            </Row>
+            <Row>
+              <Text>Max Monthly Chats:</Text>
+              {loading ? (
+                <Skeleton animation="pulse" width={90} height={20} />
+              ) : (
                 <Text weight="700">
                   {backendUser?.monthlyChatCount}/
-                  {currentSubscription.metadata.chat_count}
+                  {currentSubscription?.metadata.chat_count}
                 </Text>
-              </Row>
-              <Divider style={{ marginBottom: theme.spacing.lg * 2 }} />
-              <Row>
-                <Text>View more in your</Text>
-                <Link href="/dashboard">
-                  <Row
-                    style={{
-                      marginVertical: 0,
-                      borderBottomColor: colors.accentBlue,
-                      borderBottomWidth: 1,
-                      borderStyle: "solid",
-                    }}
-                  >
-                    <Text color="primary">Profile</Text>
-                    <Icon
-                      type="font-awesome-5"
-                      name="user-circle"
-                      size={16}
-                      color={colors.accentBlue}
-                    />
-                  </Row>
-                </Link>
-              </Row>
-            </Content>
-          ) : null}
+              )}
+            </Row>
+            <Divider style={{ marginBottom: theme.spacing.lg * 2 }} />
+            <Row>
+              <Text>View more in your</Text>
+              <Link href="/dashboard">
+                <Row
+                  style={{
+                    marginVertical: 0,
+                    borderBottomColor: colors.accentBlue,
+                    borderBottomWidth: 1,
+                    borderStyle: "solid",
+                  }}
+                >
+                  <Text color="primary">Profile</Text>
+                  <Icon
+                    type="font-awesome-5"
+                    name="user-circle"
+                    size={16}
+                    color={colors.accentBlue}
+                  />
+                </Row>
+              </Link>
+            </Row>
+          </Content>
         </StyledMain>
       </StyledContainer>
     );
