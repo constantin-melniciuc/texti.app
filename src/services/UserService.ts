@@ -62,7 +62,7 @@ export class UserService {
       setUser: action,
       // generators
       getTokens: flow,
-      signIn: flow,
+      // signIn: flow,
       signInWithGoogle: flow,
       signOut: flow,
     });
@@ -94,17 +94,16 @@ export class UserService {
     });
   };
 
-  signIn = flow(function* (this: UserService) {
-    if (this.isSigningIn) return null;
-    yield GoogleSignin.signInSilently();
-  });
+  // signIn = flow(function* (this: UserService) {
+  //   if (this.isSigningIn) return null;
+  //   yield GoogleSignin.signInSilently();
+  // });
 
   isSignedIn = flow(function* (this: UserService) {
     return yield GoogleSignin.isSignedIn();
   });
 
   signInWithGoogle = flow(function* (this: UserService) {
-    this.isSigningIn = true;
     // Check if your device supports Google Play
     yield GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     // Get the users ID token
@@ -143,10 +142,6 @@ export class UserService {
         // some other error happened
         captureException(error, { tags: { error: "other" } });
       }
-    } finally {
-      runInAction(() => {
-        this.isSigningIn = false;
-      });
     }
   });
 
