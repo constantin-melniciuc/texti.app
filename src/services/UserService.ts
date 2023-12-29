@@ -5,7 +5,14 @@ import {
 } from "@react-native-google-signin/google-signin";
 import { API_URL, GOOGLE_CLIENT_ID, AUTH_JWT_SIGNATURE } from "@env";
 import { SUBSCRIPTION_NAMES } from "./SubscriptionService";
-import { action, flow, makeObservable, observable, runInAction } from "mobx";
+import {
+  action,
+  flow,
+  makeObservable,
+  observable,
+  runInAction,
+  when,
+} from "mobx";
 import { buildHeaders } from "./utils";
 import { sign } from "react-native-pure-jwt";
 import {
@@ -59,12 +66,20 @@ export class UserService {
       signInWithGoogle: flow,
       signOut: flow,
     });
+
+    when(
+      () => this.user !== null,
+      async () => {
+        await this.getMe();
+      }
+    );
   }
 
-  setUser(user: FirebaseAuthTypes.User | null) {
-    this.user = user;
-    this.refreshTokens();
-    this.getMe();
+  setUser = async (user: FirebaseAuthTypes.User | null) => {
+    runInAction(() => {
+      this.user = user;
+    });
+    await this.refreshTokens();
 
     configureScope((scope) => {
       scope.setUser({
@@ -72,11 +87,13 @@ export class UserService {
         email: user?.email,
       });
     });
-  }
+  };
 
-  setBackendUser(backendUser: BackendUser | null) {
-    this.backendUser = backendUser;
-  }
+  setBackendUser = (backendUser: BackendUser | null) => {
+    runInAction(() => {
+      this.backendUser = backendUser;
+    });
+  };
 
   signIn = flow(function* (this: UserService) {
     if (this.isSigningIn) return null;

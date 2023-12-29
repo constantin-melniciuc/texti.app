@@ -2,13 +2,17 @@ import { Header as RNHeader, Icon } from "@rneui/themed";
 import Avatar from "./Avatar";
 import PageTitle from "./PageTitle";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
-import { useAuth } from "../../contexts/auth";
 import { useNavigation } from "expo-router";
 import { StackActions } from "@react-navigation/native";
+import userServiceInstance, { UserService } from "../../services/UserService";
 
-export default function Header(props: NativeStackHeaderProps) {
+type HeaderProps = NativeStackHeaderProps & {
+  service: UserService;
+};
+
+function Header(props: HeaderProps) {
   const routeName = props.route.name;
-  const { user } = useAuth();
+  const { user } = props.service;
   const navigation = useNavigation();
 
   const handlePopToTop = () => {
@@ -45,4 +49,8 @@ export default function Header(props: NativeStackHeaderProps) {
       rightComponent={<Avatar size={32} />}
     />
   );
+}
+
+export default function HeaderWrapper(props: Omit<HeaderProps, "service">) {
+  return <Header {...props} service={userServiceInstance} />;
 }

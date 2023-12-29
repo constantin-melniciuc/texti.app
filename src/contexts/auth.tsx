@@ -1,21 +1,15 @@
 import { useRouter, useSegments } from "expo-router";
-import { useEffect, useContext, createContext, useState } from "react";
-import userService, { BackendUser } from "../services/UserService";
+import { useEffect, createContext, useState } from "react";
+import userService, { BackendUser, UserService } from "../services/UserService";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import { observer } from "mobx-react";
 
 type AuthContextType = {
-  signInWithGoogle: () => Promise<void>;
-  signOut: () => Promise<void>;
   user: FirebaseAuthTypes.User | null;
   backendUser: BackendUser | null;
 };
 
 const AuthContext = createContext<AuthContextType>(null);
-
-// This hook can be used to access the user info.
-export function useAuth() {
-  return useContext(AuthContext);
-}
 
 // This hook will protect the route access based on user authentication.
 function useProtectedRoute(user) {
@@ -41,22 +35,15 @@ function useProtectedRoute(user) {
 
 type Props = {
   children: React.ReactNode;
+  service: UserService;
 };
 
-export function AuthProvider(props: Props) {
+const _AuthProvider = observer(({ children, service }: Props) => {
   const [user, setUser] = useState(null);
-
-  const loginWithGoogle = async () => {
-    await userService.signInWithGoogle();
-  };
-
-  const signOut = async () => {
-    await userService.signOut();
-  };
 
   function onAuthStateChanged(user: FirebaseAuthTypes.User) {
     setUser(user);
-    userService.setUser(user);
+    service.setUser(user);
   }
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
@@ -68,13 +55,15 @@ export function AuthProvider(props: Props) {
   return (
     <AuthContext.Provider
       value={{
-        signInWithGoogle: loginWithGoogle,
-        signOut,
         user,
-        backendUser: userService.backendUser,
+        backendUser: service.backendUser,
       }}
     >
-      {props.children}
+      {children}
     </AuthContext.Provider>
   );
+});
+
+export function AuthProvider(props: Omit<Props, "service">) {
+  return <_AuthProvider {...props} service={userService} />;
 }

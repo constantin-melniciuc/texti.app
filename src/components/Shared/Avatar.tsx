@@ -1,11 +1,17 @@
 import { Avatar as RNAvatar } from "@rneui/themed";
-import { useAuth } from "../../contexts/auth";
 import { Link } from "expo-router";
 import { TouchableOpacity } from "react-native";
 import { colors } from "../../theme";
+import userServiceInstance, { UserService } from "../../services/UserService";
+import { observer } from "mobx-react";
 
-export default function Avatar({ size = 64 }: { size?: number }) {
-  const { user } = useAuth();
+type AvatarProps = {
+  service: UserService;
+  size?: number;
+};
+
+const Avatar = observer(({ size = 64, service }: AvatarProps) => {
+  const { user } = service;
   if (!user) {
     return null;
   }
@@ -37,4 +43,8 @@ export default function Avatar({ size = 64 }: { size?: number }) {
       </Link>
     </TouchableOpacity>
   );
+});
+
+export default function AvatarWrapper(props: Omit<AvatarProps, "service">) {
+  return <Avatar {...props} service={userServiceInstance} />;
 }
