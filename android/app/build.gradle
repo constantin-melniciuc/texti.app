@@ -119,8 +119,8 @@ android {
         applicationId 'com.muzedigital.texti'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 8
-        versionName "1.0.5"
+        versionCode 9
+        versionName "1.0.6"
     }
 
     splits {
