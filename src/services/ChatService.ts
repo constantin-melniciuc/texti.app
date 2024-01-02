@@ -173,11 +173,18 @@ export class ChatService {
         toastService.show(json.data as string, "error");
         return;
       }
+      if (!json.data?.threadId) {
+        captureException(json, {
+          tags: { error: "create_conversation" },
+          user: userService.user,
+        });
+        throw new Error("Failed to create a new chat");
+      }
       runInAction(() => {
         this.conversations = [
           ...this.conversations,
           {
-            threadId: json.data.threadId,
+            threadId: json?.data?.threadId,
             messages: [],
             date: new Date().toISOString(),
           },

@@ -70,6 +70,7 @@ export class UserService {
     when(
       () => this.user !== null,
       async () => {
+        await this.createUser();
         await this.getMe();
       }
     );
@@ -93,11 +94,6 @@ export class UserService {
       this.backendUser = backendUser;
     });
   };
-
-  // signIn = flow(function* (this: UserService) {
-  //   if (this.isSigningIn) return null;
-  //   yield GoogleSignin.signInSilently();
-  // });
 
   isSignedIn = flow(function* (this: UserService) {
     return yield GoogleSignin.isSignedIn();
@@ -142,6 +138,38 @@ export class UserService {
         // some other error happened
         captureException(error, { tags: { error: "other" } });
       }
+    }
+  });
+
+  private readonly createUser = flow(function* (this: UserService) {
+    try {
+      const token = yield this.getTokens();
+      if (!token) {
+        throw new Error("Failed to create user! No token");
+      }
+
+      const headers = buildHeaders({
+        token,
+        email: this.user.email,
+        uid: this.user.providerData[0].uid,
+      });
+
+      const response = yield fetch(`${API_URL}/user/auth`, {
+        method: "GET",
+        headers,
+      });
+
+      const json = yield response.json();
+      if (response.status === 403 || json.statusCode === 403) {
+        return null;
+      }
+
+      return json.data as BackendUser;
+    } catch (error) {
+      captureException(error, {
+        tags: { error: "create_user" },
+        user: this.user,
+      });
     }
   });
 
